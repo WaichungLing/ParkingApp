@@ -1,5 +1,6 @@
 import {Button, TextField, Typography} from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {useState} from "react";
 
 export default function CreateApartment(){
   
@@ -33,10 +34,28 @@ export default function CreateApartment(){
     text:{
       color: "#787878",
       width: '10vw',
-      fontSize: '1vw',
+      fontSize: '2vh',
       marginRight: '3vw',
     }
   };
+  
+  const [ApartmentName, setApartmentName] = useState('');
+  const [Address, setAddress] = useState('');
+  const [Zipcode, setZipcode] = useState('');
+  const [NumberOfTandem, setNumberOfTandem] = useState('');
+  const [NumberPerTandem, setNumberPerTandem] = useState('');
+  
+  function handleNumberOfTandem(e) {
+    let s = e.target.value;
+    console.log(s.replace(/[^0-9]/g, ''))
+    setNumberOfTandem(s.replace(/[^0-9]/g, ''));
+  }
+  
+  function handleNumberPerTandem(e) {
+    let s = e.target.value;
+    console.log(s.replace(/[^0-9]/g, ''))
+    setNumberPerTandem(s.replace(/[^0-9]/g, ''));
+  }
   
   return (
     <ThemeProvider theme={theme}>
@@ -46,36 +65,41 @@ export default function CreateApartment(){
           <box style={styles.inputSet}>
             <Typography style={styles.text}>Apartment Name</Typography>
             <TextField fullWidth
-                       id="ApartmentName"
+                       value={ApartmentName}
                        variant="outlined"
+                       onChange={(e) => setApartmentName(e.target.value)}
             />
           </box>
           <box style={styles.inputSet}>
             <Typography style={styles.text}>Address</Typography>
             <TextField fullWidth
-                       id="Address"
+                       value={Address}
                        variant="outlined"
+                       onChange={(e) => setAddress(e.target.value)}
             />
           </box>
           <box style={styles.inputSet}>
             <Typography style={styles.text}>Zip Code</Typography>
             <TextField fullWidth
-                       id="Zipcode"
+                       value={Zipcode}
                        variant="outlined"
+                       onChange={(e) => setZipcode(e.target.value)}
             />
           </box>
           <box style={styles.inputSet}>
             <Typography style={styles.text}>Number of Tandem</Typography>
             <TextField fullWidth
-                       id="TandemNumber"
+                       value={NumberOfTandem}
                        variant="outlined"
+                       onChange={(e) => handleNumberOfTandem(e)}
             />
           </box>
           <box style={styles.inputSet}>
             <Typography style={styles.text}>Number per Tandem</Typography>
             <TextField fullWidth
-                       id="NumberPerTandem"
+                       value={NumberPerTandem}
                        variant="outlined"
+                       onChange={(e) => handleNumberPerTandem(e)}
             />
           </box>
         </box>

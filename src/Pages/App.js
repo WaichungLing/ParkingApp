@@ -10,7 +10,6 @@ function App() {
   * 3. How to import other components? As simple as the <PlainText /> in this example.
   * 4. For styling, you can include a css file like ./App.cs, or use sx prop provided by Material UI,
   *    see https://mui.com/system/basics/#demo
-  * 5. When push the code, try to use .gitignore to ignore node_modules directory, because there are too many files.
   */
   
   return (

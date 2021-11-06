@@ -23,7 +23,7 @@ function Notification() {
 
   const PushButton = styled(Button) ({
     textTransform: 'none',
-    fontSize: '2vw',
+    fontSize: '1.7vw',
     fontWeight: 600,
     maxWidth: '56vw',
     maxHeight: '5vw',

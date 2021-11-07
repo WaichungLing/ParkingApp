@@ -7,7 +7,6 @@ import {useState, useEffect, useRef} from 'react';
 import Lambo from '../Images/lamborghini.jpeg';
 import Draggable from 'react-draggable';
 import {Button, Typography} from "@mui/material";
-import Divider from '@mui/material/Divider';
 
 const theme = createTheme({
   palette: {

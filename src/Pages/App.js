@@ -1,22 +1,23 @@
-// import './App.css';
-import {Button} from "@mui/material";
-import PlainText from "./PlainText";
+import * as React from "react";
+import { Routes, Route } from "react-router-dom";
+import Login from "./Login";
+import Setup from "./Setup";
+import CreateApartment from './CreateApartment';
+import ParkingGrid from "./ParkingGrid";
+import JoinCode from "./JoinCode";
+import Notification from "./Notification";
 
 function App() {
-  
-  /*
-  * 1. Create a new .js file in src, you can create multiple .js files as components and import them in a final file
-  * 2. To test how it looks like on web, simply replace the <App /> in index.js with the .js file you want to use
-  * 3. How to import other components? As simple as the <PlainText /> in this example.
-  * 4. For styling, you can include a css file like ./App.cs, or use sx prop provided by Material UI,
-  *    see https://mui.com/system/basics/#demo
-  */
-  
   return (
     <div className="App">
-      {/*Test MaterialUI*/}
-      <Button variant="outlined">Hi</Button>
-      <PlainText/>
+      <Routes>
+        <Route path="/" element={<Login />}/>
+        <Route path="select" element={<Setup />}/>
+        <Route path="join" element={<JoinCode/>}/>
+        <Route path="create" element={<CreateApartment/>}/>
+        <Route path="view" element={<ParkingGrid/>}/>
+        <Route path="notification" element={<Notification/>}/>
+      </Routes>
     </div>
   );
 }

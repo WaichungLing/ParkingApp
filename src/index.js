@@ -1,22 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter } from "react-router-dom";
 import './index.css';
 import App from './Pages/App';
-import Login from './Pages/Login';
-import Setup from './Pages/Setup';
-import CreateApartment from './Pages/CreateApartment';
-import JoinCode from './Pages/JoinCode';
-import Notification from './Pages/Notification';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
-    <Login />
-    <Setup />
-    <CreateApartment />
-    <JoinCode />
-    <Notification />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );

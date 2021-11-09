@@ -16,7 +16,7 @@ function Login() {
 	const styles = {
 		paperContainer: {
 			backgroundImage: `url(${Image})`,
-			height: "100%",
+			height: "400pt",
 			width: "100%",
 		},
 		text: {
@@ -51,6 +51,11 @@ function Login() {
 	const [Email, setEmail] = useState('');
 	const [Password, setPassword] = useState('');
 
+	function handleClick() {
+		document.getElementById("signup").style.display = 'none';
+		document.getElementById("login").style.visibility = 'visible';
+	}
+
 	return (
 		<ThemeProvider theme={theme}>
 			<Grid container>
@@ -59,7 +64,7 @@ function Login() {
 				</Grid>
 				<Grid item xs={6} sm={6} md={6} container style={styles.loginGrid}>
 					<Typography style={styles.text} component="h1">PARKING APP</Typography>
-					<Box style={styles.inputSet}>
+					<Box style={styles.inputSet} id="signup">
 						<TextField id="username"
 											 label="UserName"
 											 value={UserName}
@@ -90,12 +95,29 @@ function Login() {
 						</TextField>
 						<Button style={styles.signupButton} type="submit" variant="contained" sx={{mt: 3, mb: 2}}>SIGNUP</Button>
 						<Divider variant="middle" />
-						<Button style={styles.loginButton} type="submit" variant="text"> LOGIN</Button>
+						<Button style={styles.loginButton} type="submit" variant="text" onClick={handleClick}> LOGIN</Button>
 					</Box>
+					<Box style={styles.inputSet} sx={{ visibility: 'hidden' }} id="login">
+						<TextField id="username"
+											label="UserName"
+											value={UserName}
+											variant="outlined"
+											margin="normal"
+											onChange={(e) => setUserName(e.target.value)}>
+						</TextField>
+						<TextField id="password"
+											label="Password"
+											value={Password}
+											variant="outlined"
+											margin="normal"
+											onChange={(e) => setPassword(e.target.value)}>
+						</TextField>
+					<Button style={styles.loginButton} type="submit" variant="text"> LOGIN</Button>
+				</Box>
 				</Grid>
 			</Grid>
 		</ThemeProvider>
 	);
 }
 
-  export default Login;
+export default Login;

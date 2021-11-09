@@ -152,8 +152,6 @@ export default function ParkingGrid(props) {
             {Array.from(Array(n*m)).map((_, index) => {
               let sz = 12.0/n;
               let ht = 1.5 * parkingLotDimensions.wd;
-              let xStep = singleGridDimensions.wd - 1/2;
-              let yStep = 1.5*xStep;
               
               return (
                 <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>

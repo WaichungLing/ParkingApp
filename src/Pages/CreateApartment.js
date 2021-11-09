@@ -1,4 +1,4 @@
-import {Button, TextField, Typography} from "@mui/material";
+import {Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography} from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {useState} from "react";
 
@@ -44,6 +44,8 @@ export default function CreateApartment(){
   const [Zipcode, setZipcode] = useState('');
   const [NumberOfTandem, setNumberOfTandem] = useState('');
   const [NumberPerTandem, setNumberPerTandem] = useState('');
+  const [day, setDay] = useState('');
+  const [time, setTime] = useState('');
   
   function handleNumberOfTandem(e) {
     let s = e.target.value;
@@ -56,6 +58,14 @@ export default function CreateApartment(){
     console.log(s.replace(/[^0-9]/g, ''))
     setNumberPerTandem(s.replace(/[^0-9]/g, ''));
   }
+  
+  const handleDayChange = (event) => {
+    setDay(event.target.value);
+  };
+  
+  const handleTimeChange = (event) => {
+    setTime(event.target.value);
+  };
   
   return (
     <ThemeProvider theme={theme}>
@@ -101,6 +111,50 @@ export default function CreateApartment(){
                        variant="outlined"
                        onChange={(e) => handleNumberPerTandem(e)}
             />
+          </box>
+          <box style={styles.inputSet}>
+            <Typography style={styles.text}>Street Cleaning Time</Typography>
+            <div style={{width:'40vw', display:'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
+              <div>
+                <FormControl style={{width:'7vw'}}>
+                  <InputLabel id="daySelector">Day</InputLabel>
+                  <Select
+                    labelId="daySelector"
+                    value={day}
+                    label="Day"
+                    onChange={handleDayChange}
+                  >
+                    <MenuItem value={0}>None</MenuItem>
+                    <MenuItem value={1}>Sunday</MenuItem>
+                    <MenuItem value={2}>Monday</MenuItem>
+                    <MenuItem value={3}>Tuesday</MenuItem>
+                    <MenuItem value={4}>Wednesday</MenuItem>
+                    <MenuItem value={5}>Thursday</MenuItem>
+                    <MenuItem value={6}>Friday</MenuItem>
+                    <MenuItem value={7}>Saturday</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+              
+              <div>
+                <FormControl style={{width:'7vw'}}>
+                  <InputLabel id="TimeSelector">Time</InputLabel>
+                  <Select
+                    labelId="TimeSelector"
+                    value={time}
+                    label="Time"
+                    onChange={handleTimeChange}
+                  >
+                    {Array.from(Array(24)).map((_, index) =>{
+                      return (
+                        <MenuItem value={index}>{index}:00</MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
+              </div>
+              
+            </div>
           </box>
         </box>
         <Button style={{margin:'5vh'}} type="submit" variant="contained"> CREATE </Button>

@@ -1,9 +1,10 @@
-import {Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography} from "@mui/material";
+import {Button, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Toolbar, Typography} from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {useState} from "react";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 export default function CreateApartment(){
-  
+
   const theme = createTheme({
     palette: {
       primary: {
@@ -11,7 +12,7 @@ export default function CreateApartment(){
       },
     },
   });
-  
+
   const styles = {
     root:{
       display: 'flex',
@@ -38,7 +39,7 @@ export default function CreateApartment(){
       marginRight: '3vw',
     }
   };
-  
+
   const [ApartmentName, setApartmentName] = useState('');
   const [Address, setAddress] = useState('');
   const [Zipcode, setZipcode] = useState('');
@@ -46,30 +47,38 @@ export default function CreateApartment(){
   const [NumberPerTandem, setNumberPerTandem] = useState('');
   const [day, setDay] = useState('');
   const [time, setTime] = useState('');
-  
+
   function handleNumberOfTandem(e) {
     let s = e.target.value;
     console.log(s.replace(/[^0-9]/g, ''))
     setNumberOfTandem(s.replace(/[^0-9]/g, ''));
   }
-  
+
   function handleNumberPerTandem(e) {
     let s = e.target.value;
     console.log(s.replace(/[^0-9]/g, ''))
     setNumberPerTandem(s.replace(/[^0-9]/g, ''));
   }
-  
+
   const handleDayChange = (event) => {
     setDay(event.target.value);
   };
-  
+
   const handleTimeChange = (event) => {
     setTime(event.target.value);
   };
-  
+
   return (
     <ThemeProvider theme={theme}>
       <div style={styles.root}>
+        <Toolbar sx={{
+                    display: 'flex',
+                    justifyContent: 'start',
+                    overflowX: 'auto',
+                    width: '60%'
+                    }}>
+          <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>
+        </Toolbar>
         <Typography style={{color: "#60A166", fontSize: '2.5vw', fontWeight: 600}}>Create a new apartment parking</Typography>
         <box style={styles.fields}>
           <box style={styles.inputSet}>
@@ -135,7 +144,7 @@ export default function CreateApartment(){
                   </Select>
                 </FormControl>
               </div>
-              
+
               <div>
                 <FormControl style={{width:'7vw'}}>
                   <InputLabel id="TimeSelector">Time</InputLabel>
@@ -153,13 +162,13 @@ export default function CreateApartment(){
                   </Select>
                 </FormControl>
               </div>
-              
+
             </div>
           </box>
         </box>
         <Button style={{margin:'5vh'}} type="submit" variant="contained"> CREATE </Button>
       </div>
     </ThemeProvider>
-    
+
   );
 }

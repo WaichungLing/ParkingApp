@@ -6,7 +6,12 @@ import Grid from '@mui/material/Grid';
 import {useState, useEffect, useRef} from 'react';
 import Lambo from '../Images/lamborghini.jpeg';
 import Draggable from 'react-draggable';
-import {Button, Typography} from "@mui/material";
+import {Button, Typography, ButtonGroup} from "@mui/material";
+import HomeIcon from '@mui/icons-material/Home';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 const theme = createTheme({
   palette: {
@@ -68,7 +73,7 @@ export default function ParkingGrid(props) {
   // Replace with props later
   const n = 5;
   const m = 2;
-  
+
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
   const [parkingLotDimensions, setParkingLotDimensions] = useState({});
   const [singleGridDimensions, setSingleGridDimensions] = useState({});
@@ -76,7 +81,7 @@ export default function ParkingGrid(props) {
   const [parkedID, setParkedID] = useState(-1);     // This is for add your car
   const ref = useRef(null);
   const ref2 = useRef(null);
-  
+
   // When window size changed
   useEffect(() => {
     function handleResize() {
@@ -87,12 +92,12 @@ export default function ParkingGrid(props) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
+
   // When initialize
   useEffect(() => {
     setParkingLotDimensions({wd: ref.current.clientWidth, ht: ref.current.offsetHeight});
     setSingleGridDimensions({wd: ref.current.offsetWidth});
-    
+
     // Call function to get the ${carParked}
     /** TODO **/
     let id = -1;
@@ -101,9 +106,9 @@ export default function ParkingGrid(props) {
       steps.x = id % n;
       steps.y = m - Math.floor(id / n);
     }
-    
+
   }, []);
-  
+
   function handleDrag(e, data){
     console.log(data);
     if (data.deltaX===0 && data.deltaY>0){
@@ -119,10 +124,22 @@ export default function ParkingGrid(props) {
     setParkedID((m-steps.y)*n+steps.x);
     console.log((m-steps.y)*n+steps.x);
   }
-  
+
   return (
     <ThemeProvider theme={theme}>
       <div style={{...styles.root}}>
+        <Toolbar sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    overflowX: 'auto',
+                    width: '50%'
+                    }}>
+          <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>
+          <ButtonGroup vairiant="text">
+            <IconButton><HomeIcon></HomeIcon></IconButton>
+            <IconButton><NotificationsIcon></NotificationsIcon></IconButton>
+          </ButtonGroup>
+        </Toolbar>
         <Typography style={{color: "#60A166", fontSize: '2.5vw', fontWeight: 600, marginBottom: '5vh', marginTop: '3vh'}}>
           Drag and drop your car
         </Typography>
@@ -152,7 +169,7 @@ export default function ParkingGrid(props) {
             {Array.from(Array(n*m)).map((_, index) => {
               let sz = 12.0/n;
               let ht = 1.5 * parkingLotDimensions.wd;
-              
+
               return (
                 <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
                   <Item style={{...styles.singleLot, height: ht}} >
@@ -185,6 +202,6 @@ export default function ParkingGrid(props) {
         </Box>
       </div>
     </ThemeProvider>
-    
+
   );
 }

@@ -1,7 +1,12 @@
-import {Button, Box, Stack, Typography, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
+import {Button, Box, Stack, Typography, FormControl, InputLabel, Select, MenuItem, ButtonGroup} from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {useState} from "react";
+import HomeIcon from '@mui/icons-material/Home';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 function Notification() {
 
@@ -19,6 +24,8 @@ function Notification() {
       flexDirection: 'column',
       alignItems: 'center',
       marginTop: '5vh',
+      width: '100%',
+      height: "100%"
     }
   };
 
@@ -39,19 +46,19 @@ function Notification() {
     display: 'flex',
     justifyContent: 'center'
   });
-  
+
   const [day, setDay] = useState('');
   const [hour, setHour] = useState('');
   const [minute, setMinute] = useState('');
-  
+
   const handleDayChange = (event) => {
     setDay(event.target.value);
   };
-  
+
   const handleHourChange = (event) => {
     setHour(event.target.value);
   };
-  
+
   const handleMinuteChange = (event) => {
     setMinute(event.target.value);
   };
@@ -59,12 +66,24 @@ function Notification() {
   return (
     <ThemeProvider theme={theme}>
       <div style={styles.root} className="Notification">
+        <Toolbar sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  overflowX: 'auto',
+                  width: '50%'
+                  }}>
+          <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>
+          <ButtonGroup vairiant="text">
+            <IconButton><HomeIcon></HomeIcon></IconButton>
+            <IconButton><NotificationsIcon></NotificationsIcon></IconButton>
+          </ButtonGroup>
+        </Toolbar>
         <Box
           sx={{
             pt: 5,
             pb: 7,
-            width: 0.62,
-            flexDirection: 'column',
+            display: 'flex',
+            flexDirection: 'row',
             justifyContent: 'center'
           }}>
           <Title>Notification</Title>
@@ -93,7 +112,7 @@ function Notification() {
                   </Select>
                 </FormControl>
               </div>
-        
+
              <div style={{display:'flex', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}}>
                <div>
                  <FormControl style={{width:'7vw'}}>
@@ -131,8 +150,8 @@ function Notification() {
                  </FormControl>
                </div>
              </div>
-             
-    
+
+
             </div>
           </box>
           <PushButton type="submit" variant="contained"> Notify others more outside than you </PushButton>

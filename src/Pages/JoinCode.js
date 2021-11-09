@@ -1,7 +1,8 @@
-import { Button, Box, Link, Typography, TextField } from "@mui/material";
+import { Button, Box, IconButton, Link, Typography, TextField, Toolbar } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {useState} from "react";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 function JoinCode() {
 
@@ -39,6 +40,14 @@ function JoinCode() {
   return (
     <ThemeProvider theme={theme}>
       <div style={styles.root} className="JoinCode">
+        <Toolbar sx={{
+                    display: 'flex',
+                    justifyContent: 'start',
+                    overflowX: 'auto',
+                    width: '60%'
+                    }}>
+          <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>
+        </Toolbar>
         <Box
           sx={{
             pt: 5,

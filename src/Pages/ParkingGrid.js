@@ -110,7 +110,7 @@ export default function ParkingGrid(props) {
   }, []);
 
   function handleDrag(e, data){
-    console.log(data);
+    // console.log(data);
     if (data.deltaX===0 && data.deltaY>0){
       steps.y--;
     }else if (data.deltaX===0 && data.deltaY<0){
@@ -120,7 +120,7 @@ export default function ParkingGrid(props) {
     }else{
       steps.x++;
     }
-    console.log(steps);
+    // console.log(steps);
     setParkedID((m-steps.y)*n+steps.x);
     console.log((m-steps.y)*n+steps.x);
   }
@@ -188,17 +188,27 @@ export default function ParkingGrid(props) {
               );
             })}
           </Grid>
-          <Draggable
-            positionOffset={{x:1,y:1}}
-            grid={[singleGridDimensions.wd - 1/2,
-              1.5*(singleGridDimensions.wd - 1/2)]}
-            onDrag={handleDrag}
-          >
-            <img draggable="false" src={Lambo} style={{height: 1.5*parkingLotDimensions.wd,
-              width: parkingLotDimensions.wd}}>
-            </img>
-          </Draggable>
-          <Button variant='contained' style={{marginLeft: '10vw'}}>SAVE</Button>
+          {carParked < 0?
+            <div>
+              <Draggable
+                positionOffset={{x:1,y:1}}
+                grid={[singleGridDimensions.wd - 1/2,
+                  1.5*(singleGridDimensions.wd - 1/2)]}
+                onDrag={handleDrag}
+              >
+                <img draggable="false" src={Lambo} style={{height: 1.5*parkingLotDimensions.wd,
+                  width: parkingLotDimensions.wd}}>
+                </img>
+              </Draggable>
+              <Button variant='contained' style={{marginLeft: '10vw'}}>SAVE</Button>
+            </div>
+            :
+            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', margin:'5vh'}}>
+              <Button variant='contained'>SAVE</Button>
+            </div>
+            
+          }
+          
         </Box>
       </div>
     </ThemeProvider>

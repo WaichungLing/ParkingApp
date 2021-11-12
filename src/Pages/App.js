@@ -15,8 +15,16 @@ function App() {
         <Route path="select" element={<Setup />}/>
         <Route path="join" element={<JoinCode/>}/>
         <Route path="create" element={<CreateApartment/>}/>
-        <Route path="view" element={<ParkingGrid/>}/>
+        <Route path="view/:apartmentID" element={<ParkingGrid/>}/>
         <Route path="notification" element={<Notification/>}/>
+        <Route
+          path="*"
+          element={
+            <main style={{ padding: "1rem" }}>
+              <p>404 Not Found</p>
+            </main>
+          }
+        />
       </Routes>
     </div>
   );

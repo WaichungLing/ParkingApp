@@ -71,14 +71,14 @@ export default function CreateApartment(){
   return (
     <ThemeProvider theme={theme}>
       <div style={styles.root}>
-        <Toolbar sx={{
-                    display: 'flex',
-                    justifyContent: 'start',
-                    overflowX: 'auto',
-                    width: '60%'
-                    }}>
-          <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>
-        </Toolbar>
+        {/*<Toolbar sx={{*/}
+        {/*            display: 'flex',*/}
+        {/*            justifyContent: 'start',*/}
+        {/*            overflowX: 'auto',*/}
+        {/*            width: '60%'*/}
+        {/*            }}>*/}
+        {/*  <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>*/}
+        {/*</Toolbar>*/}
         <Typography style={{color: "#60A166", fontSize: '2.5vw', fontWeight: 600}}>Create a new apartment parking</Typography>
         <box style={styles.fields}>
           <box style={styles.inputSet}>

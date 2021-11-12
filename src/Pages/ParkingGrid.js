@@ -12,6 +12,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import {useLocation, useParams} from "react-router-dom";
 
 const theme = createTheme({
   palette: {
@@ -70,6 +71,8 @@ const styles = {
 let steps = {x:0,y:0}; // x how much steps in x-axis, >0 right, <0 left, y : >0 up, <0 down
 
 export default function ParkingGrid(props) {
+  let params = useParams();
+  let url = useLocation();
   // Replace with props later
   const n = 5;
   const m = 2;
@@ -97,10 +100,16 @@ export default function ParkingGrid(props) {
   useEffect(() => {
     setParkingLotDimensions({wd: ref.current.clientWidth, ht: ref.current.offsetHeight});
     setSingleGridDimensions({wd: ref.current.offsetWidth});
-
-    // Call function to get the ${carParked}
+    
+    console.log(params);
+    console.log(url);
+    
     /** TODO **/
-    let id = -1;
+    // 1. getApartment by params.apartmentID, if null, render "Apartment Not exist" and a link to create apartment
+    // 2. if apartmentID not null, update n,m, users, spots
+    // 3. Check the current user has parked in this apartment or not, update ${carParked}
+    /** TODO **/
+    let id = -1; // should be just carPark, for static testing only, remove when link backend
     // Once return carParked, setCarParked and updated parkedID to set steps
     if (id >= 0){
       steps.x = id % n;
@@ -128,18 +137,18 @@ export default function ParkingGrid(props) {
   return (
     <ThemeProvider theme={theme}>
       <div style={{...styles.root}}>
-        <Toolbar sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    overflowX: 'auto',
-                    width: '50%'
-                    }}>
-          <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>
-          <ButtonGroup vairiant="text">
-            <IconButton><HomeIcon></HomeIcon></IconButton>
-            <IconButton><NotificationsIcon></NotificationsIcon></IconButton>
-          </ButtonGroup>
-        </Toolbar>
+        {/*<Toolbar sx={{*/}
+        {/*            display: 'flex',*/}
+        {/*            justifyContent: 'space-between',*/}
+        {/*            overflowX: 'auto',*/}
+        {/*            width: '50%'*/}
+        {/*            }}>*/}
+        {/*  <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>*/}
+        {/*  <ButtonGroup vairiant="text">*/}
+        {/*    <IconButton><HomeIcon></HomeIcon></IconButton>*/}
+        {/*    <IconButton><NotificationsIcon></NotificationsIcon></IconButton>*/}
+        {/*  </ButtonGroup>*/}
+        {/*</Toolbar>*/}
         <Typography style={{color: "#60A166", fontSize: '2.5vw', fontWeight: 600, marginBottom: '5vh', marginTop: '3vh'}}>
           Drag and drop your car
         </Typography>

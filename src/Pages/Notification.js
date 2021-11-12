@@ -66,18 +66,6 @@ function Notification() {
   return (
     <ThemeProvider theme={theme}>
       <div style={styles.root} className="Notification">
-        <Toolbar sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  overflowX: 'auto',
-                  width: '50%'
-                  }}>
-          <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>
-          <ButtonGroup vairiant="text">
-            <IconButton><HomeIcon></HomeIcon></IconButton>
-            <IconButton><NotificationsIcon></NotificationsIcon></IconButton>
-          </ButtonGroup>
-        </Toolbar>
         <Box
           sx={{
             pt: 5,
@@ -89,10 +77,11 @@ function Notification() {
           <Title>Notification</Title>
         </Box>
         <Stack
-          spacing={7}
+          spacing={10}
           direction="column"
           justifyContent="center"
           alignItems="center"
+          style={{marginTop:'8vh'}}
         >
           <box>
             <div style={{width:'40vw', display:'flex', flexDirection: 'row', justifyContent: 'space-around'}}>

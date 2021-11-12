@@ -1,5 +1,6 @@
+import { Link } from 'react-router-dom';
 import styled from "@emotion/styled";
-import {Button, Typography, Stack, Box, Link } from "@mui/material";
+import {Button, Typography, Stack, Box } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function Setup() {
@@ -43,19 +44,9 @@ function Setup() {
     textTransform: 'none',
     fontSize: '2vw',
     fontWeight: 600,
-    maxWidth: '50vw', 
-    maxHeight: '5vw', 
-    minWidth: '50vw', 
-    minHeight: '5vw'
-  });
-
-  const TextButton = styled(Button) ({
-    textTransform: 'none',
-    fontSize: '2vw',
-    fontWeight: 600,
-    maxWidth: '50vw', 
-    maxHeight: '5vw', 
-    minWidth: '50vw', 
+    maxWidth: '50vw',
+    maxHeight: '5vw',
+    minWidth: '50vw',
     minHeight: '5vw'
   });
 
@@ -68,7 +59,7 @@ function Setup() {
   return (
     <ThemeProvider theme={theme}>
       <div style={styles.root} className="Setup">
-        <Box 
+        <Box
           sx={{
             pt: 5,
             pb: 7,
@@ -79,15 +70,19 @@ function Setup() {
           <Title>Do you want to join an existing ApartmentParking</Title>
           <Title>or create a new one?</Title>
         </Box>
-        <Stack 
-          spacing={7} 
+        <Stack
+          spacing={7}
           direction="column"
           justifyContent="center"
           alignItems="center"
         >
-          <PushButton type="submit" variant="contained"> Join an existing one </PushButton>
-          <PushButton type="submit" variant="contained"> Create a new one </PushButton>
-          <Link style={{color: "#707070"}} href="#">What is ApartmentParking?</Link>
+          <Link to="/join" style={{ textDecoration: 'none', color: 'white'}}>
+            <PushButton type="submit" variant="contained">Join an existing one</PushButton>
+          </Link>
+          <Link to="/create" style={{ textDecoration: 'none', color: 'white'}}>
+            <PushButton type="submit" variant="contained">Create a new one</PushButton>
+          </Link>
+          {/*<Link style={{color: "#707070"}} href="#">What is ApartmentParking?</Link>*/}
         </Stack>
       </div>
     </ThemeProvider>

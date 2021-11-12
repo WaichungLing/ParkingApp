@@ -1,4 +1,5 @@
-import { Button, Box, IconButton, Link, Typography, TextField, Toolbar } from "@mui/material";
+import { Button, Box, IconButton, Link as sLink, Typography, TextField, Toolbar } from "@mui/material";
+import { Link, Outlet } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {useState} from "react";
@@ -23,7 +24,8 @@ function JoinCode() {
     },
 		textField: {
 			width: '40vw',
-			height: '5vw'
+			height: '5vw',
+      marginTop: '10vh',
 		}
   };
 
@@ -36,18 +38,27 @@ function JoinCode() {
   });
 
 	const [JoinCode, setJoinCode] = useState('');
+  const [clicked, setClicked] = useState(false);
+  
+  function handleClickButton(){
+    setClicked(!clicked);
+  }
+  
+  function handleJoinCode(e){
+    setJoinCode(e.target.value);
+  }
 
   return (
     <ThemeProvider theme={theme}>
       <div style={styles.root} className="JoinCode">
-        <Toolbar sx={{
-                    display: 'flex',
-                    justifyContent: 'start',
-                    overflowX: 'auto',
-                    width: '60%'
-                    }}>
-          <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>
-        </Toolbar>
+        {/*<Toolbar sx={{*/}
+        {/*            display: 'flex',*/}
+        {/*            justifyContent: 'start',*/}
+        {/*            overflowX: 'auto',*/}
+        {/*            width: '60%'*/}
+        {/*            }}>*/}
+        {/*  <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>*/}
+        {/*</Toolbar>*/}
         <Box
           sx={{
             pt: 5,
@@ -59,14 +70,28 @@ function JoinCode() {
           <Title>Type in the join code of your apartment:</Title>
         </Box>
         <TextField  id="joincode"
-										label="e.g. 945948350245"
+										label="e.g. 945245"
 										style={styles.textField}
 										value={JoinCode}
 										variant="outlined"
-										onChange={(e) => setJoinCode(e.target.value)}></TextField>
-				<Button style={{marginTop:'10vh', marginBottom: '3vh'}} type="submit" variant="contained"> Join </Button>
-				<Link style={{color: "#707070"}} href="#">What is Join code?</Link>
+										onChange={(e) => handleJoinCode(e)}></TextField>
+				<Link style={{textDecoration: 'none'}}
+              to={`/view/${JoinCode}`}
+              state={{uid:'123'}}
+        >
+          <Button style={{marginTop:'10vh', marginBottom: '3vh'}} type="submit" variant="contained"> Join </Button>
+        </Link>
+				<sLink style={{color: "#707070"}} onClick={handleClickButton}>What is Join code?</sLink>
+        {clicked ?
+          <div style={{width:'40vw', marginTop:'1vh'}}>
+            <Typography style={{color: "#707070"}}>
+              Each Apartment has a unique join code. Please ask your leasing manager or other residents for a 6-digit code.
+            </Typography>
+          </div>:
+          <div></div>
+        }
       </div>
+      <Outlet />
     </ThemeProvider>
   );
 }

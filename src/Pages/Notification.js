@@ -1,14 +1,11 @@
-import {Button, Box, Stack, Typography, FormControl, InputLabel, Select, MenuItem, ButtonGroup} from "@mui/material";
+import {Button, Box, Stack, Typography, FormControl, InputLabel, Select, MenuItem} from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {useState} from "react";
-import HomeIcon from '@mui/icons-material/Home';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import IconButton from '@mui/material/IconButton';
-import Toolbar from '@mui/material/Toolbar';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 function Notification() {
+  
+  const toNum = '+18582144238';
 
   const theme = createTheme({
     palette: {
@@ -50,6 +47,10 @@ function Notification() {
   const [day, setDay] = useState('');
   const [hour, setHour] = useState('');
   const [minute, setMinute] = useState('');
+  const [sentStatus, setSentStatus] = useState(false);
+  const [sent, setSent] = useState(false);
+  
+  const dayString = ['today', 'tomorrow', 'the day after tomorrow', 'three days later'];
 
   const handleDayChange = (event) => {
     setDay(event.target.value);
@@ -63,6 +64,32 @@ function Notification() {
     setMinute(event.target.value);
   };
 
+  function handleClick(event){
+    /** TODO **/
+    // Add toNum format checking
+    /** TODO **/
+    event.preventDefault();
+    
+    let mm = parseInt(minute)*5;
+    let dd = dayString[day];
+    
+    let message = "The car owner who parked inside your car wants to move the car at "+hour+":"+mm+" on "+dd;
+    
+    console.log(message)
+    
+    fetch(`http://localhost:4000/set-sms?recipient=${toNum}&text=${message}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setSent(true);
+          setSentStatus(true);
+        } else {
+          setSent(true);
+          setSentStatus(false);
+        }
+      });
+  }
+  
   return (
     <ThemeProvider theme={theme}>
       <div style={styles.root} className="Notification">
@@ -86,7 +113,7 @@ function Notification() {
           <box>
             <div style={{width:'40vw', display:'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
               <div>
-                <FormControl style={{width:'7vw'}}>
+                <FormControl style={{width:'11vw'}}>
                   <InputLabel id="daySelector">Day</InputLabel>
                   <Select
                     labelId="daySelector"
@@ -139,12 +166,22 @@ function Notification() {
                  </FormControl>
                </div>
              </div>
-
-
             </div>
           </box>
-          <PushButton type="submit" variant="contained"> Notify others more outside than you </PushButton>
-          {/*<PushButton type="submit" variant="contained"> Notify others the change of parking arrangement </PushButton>*/}
+          <PushButton type="submit" variant="contained" onClick={e=>handleClick(e)}> Notify others more outside than you </PushButton>
+          {sent?
+            <div>
+              {sentStatus?
+                <Typography>Notification sent successfully!</Typography>
+              :
+                <Typography>Sent failed, please try again.</Typography>
+              }
+              
+            </div>
+          :
+            <div></div>
+          }
+          
         </Stack>
       </div>
     </ThemeProvider>

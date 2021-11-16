@@ -7,6 +7,8 @@ const user_schema = new Schema({
     phone: { type: String, required: true}
 })
 
+user_schema.index({name: 1, email: 1, phone:1}, {unique: true});	// also reindexed via mongo shell so this might not be necessary but just in case if mongo restarts or something
+
 const User = mongoose.model('User', user_schema);
 
 module.exports = User;

@@ -6,66 +6,99 @@ let Spot = require("../models/spot.model");
 const dbo = require("../db/conn");
 const ObjectId = require("mongodb").ObjectId;			// convert id from String to ObjectID
 
-
-
 // may move to separate files later
 
-router.route("/users").get(function (req, res){				// might have to update if we are using own ids
+router.route("/users").get(function (req, res){
 	let db_connection = dbo.getDb("ParkingApp");
-	console.log("getting all users");
+	// console.log("getting all users");
 	db_connection
 		.collection("Users")
 		.find({}).toArray(function (err, result){
-			if (err) throw err;
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
 			res.json(result);
 		});
 });
 
 router.route("/users/:id").get(function (req, res){
 	let id = req.params.id;
-	let query = { _id: ObjectId(id)};					// might have to update if we are using own ids
+	let query = { _id: ObjectId(id)};
 	let db_connection = dbo.getDb("ParkingApp");
 	db_connection
 		.collection("Users")
 		.findOne(query, function (err, result){
-			if (err) throw err;
-			res.json(result);
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
+			if (result == null){
+				res.status(404);
+				res.send("Error: user does not exist.\n")
+			}
+			else
+				res.json(result);
 		});
 });
 
 
 router.route("/users/create").post(function (req, res){
-	const newuser = new User({
-		name: req.body.name,
-		email: req.body.email,
-		phone: req.body.phone,
-	});
-	let db_connection = dbo.getDb("ParkingApp");		// might move this to separate function to share one instance
-	db_connection
-		.collection("Users")
-		.insertOne(newuser, function (err, result){
-			if (err) throw err;
-			res.json(result);
-		});
-});
+	// console.log("Name: " + req.body.name);
+	// console.log("Email: " + req.body.email);
+	// console.log("Phone #: " + req.body.phone);
 
-router.route("/users/:id").post(function (req, res){	// update
-	let id = req.params.id;
-	let query = { _id: ObjectId(id)};
-	let updateuser = {
-		$set: {
+	if (!req.body.name || !req.body.email || !req.body.phone){
+		res.status(400);
+		res.send("Error: user needs name, email, and phone number.\n");
+	}
+	else {
+		const newuser = new User({
 			name: req.body.name,
 			email: req.body.email,
 			phone: req.body.phone,
-		},
-	};
-	let db_connection = dbo.getDb("ParkingApp");
-	db_connection
-		.collection("Users")
-		.updateOne(query, updateuser, function (err, result){
-			if (err) throw err;
-			res.json(result);
 		});
+		let db_connection = dbo.getDb("ParkingApp");		// might move this to separate function to share one instance
+		db_connection
+			.collection("Users")
+			.insertOne(newuser, function (err, result){
+				// if (err) throw err;
+				if (err){
+					res.status(500);
+					res.send(err.message);
+				}
+				res.status(201);		// created
+				res.json(result);
+			});
+	}
+});
+
+router.route("/users/:id").post(function (req, res){	// update
+	if (!req.body.name || !req.body.email || !req.body.phone){
+		res.status(400);
+		res.send("Error: updated user needs name, email, and phone number.\n");
+	}
+	else {
+		let id = req.params.id;
+		let query = { _id: ObjectId(id)};
+		let updateuser = {
+			$set: {
+				name: req.body.name,
+				email: req.body.email,
+				phone: req.body.phone,
+			},
+		};
+		let db_connection = dbo.getDb("ParkingApp");
+		db_connection
+			.collection("Users")
+			.updateOne(query, updateuser, function (err, result){
+				if (err){
+					res.status(500);
+					res.send(err.message);
+				}
+				res.json(result);
+			});
+	}
 });
 
 router.route("/users/:id").delete(function (req, res){
@@ -75,12 +108,17 @@ router.route("/users/:id").delete(function (req, res){
 	db_connection
 		.collection("Users")
 		.deleteOne(query, function (err, result){
-			if (err) throw err;
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
 			res.json(result);
 		});
 });
 
-router.route("/apts").get(function (req, res){				// might have to update if we are using own ids
+
+
+router.route("/apts").get(function (req, res){
 	let db_connection = dbo.getDb("ParkingApp");
 	console.log("getting all users");
 	db_connection
@@ -93,7 +131,7 @@ router.route("/apts").get(function (req, res){				// might have to update if we 
 
 router.route("/apts/:id").get(function (req, res){
 	let id = req.params.id;
-	let query = { _id: ObjectId(id)};					// might have to update if we are using own ids
+	let query = { _id: ObjectId(id)};
 	let db_connection = dbo.getDb("ParkingApp");
 	db_connection
 		.collection("Apts")

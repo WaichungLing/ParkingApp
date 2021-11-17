@@ -18,6 +18,7 @@
     "moment": "^2.29.1",
     "mongodb": "^4.1.4",
     "mongoose": "^6.0.13",
-    "package.json": "^2.0.1"
+    "package.json": "^2.0.1",
+    "twilio": "^3.71.1"
   }
 }

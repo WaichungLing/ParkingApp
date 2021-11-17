@@ -1,3 +1,6 @@
+const scheduler = require('./scheduler');
+scheduler.start();
+
 const express = require("express");
 const app = express();
 const cors = require("cors");

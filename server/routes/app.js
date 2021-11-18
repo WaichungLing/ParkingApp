@@ -48,15 +48,16 @@ router.route("/users/create").post(function (req, res){
 	// console.log("Email: " + req.body.email);
 	// console.log("Phone #: " + req.body.phone);
 
-	if (!req.body.name || !req.body.email || !req.body.phone){
+	if (!req.body.name || !req.body.email || !req.body.phone || !req.body.password){
 		res.status(400);
-		res.send("Error: user needs name, email, and phone number.\n");
+		res.send("Error: user needs name, email, password and phone number.\n");
 	}
 	else {
 		const newuser = new User({
 			name: req.body.name,
 			email: req.body.email,
 			phone: req.body.phone,
+			password: req.body.password
 		});
 		let db_connection = dbo.getDb("ParkingApp");		// might move this to separate function to share one instance
 		db_connection

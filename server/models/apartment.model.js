@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 const Twilio = require('twilio');
-console.log(process.env);
 const twilio_sid = process.env.TWILIO_SID;
 const twilio_token = process.env.TWILIO_AUTHTOKEN;
 const twilio_phone_number = process.env.TWILIO_PHONE_NUMBER;

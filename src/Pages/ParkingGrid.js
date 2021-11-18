@@ -7,11 +7,6 @@ import {useState, useEffect, useRef} from 'react';
 import Lambo from '../Images/lamborghini.jpeg';
 import Draggable from 'react-draggable';
 import {Button, Typography, ButtonGroup} from "@mui/material";
-import HomeIcon from '@mui/icons-material/Home';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import IconButton from '@mui/material/IconButton';
-import Toolbar from '@mui/material/Toolbar';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import {useLocation, useParams} from "react-router-dom";
 
 const theme = createTheme({

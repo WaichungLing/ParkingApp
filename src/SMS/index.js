@@ -11,13 +11,13 @@ const client = require('twilio')(accountSid, authToken);
 const app = express();
 app.use(cors());
 
-app.get('/', (req, res) => {
+app.get('/api/', (req, res) => {
   res.send("Welcome to the Express Server");
 });
 
 // http://localhost:4000
 
-app.get('/set-sms', (req, res) => {
+app.get('/api/send-sms', (req, res) => {
   const {recipient, text} = req.query;
   client.messages.create({
     body: text,

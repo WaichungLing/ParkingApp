@@ -77,7 +77,7 @@ function Notification() {
     
     console.log(message)
     
-    fetch(`http://localhost:4000/set-sms?recipient=${toNum}&text=${message}`)
+    fetch(`http://localhost:4000/api/send-sms?recipient=${toNum}&text=${message}`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {

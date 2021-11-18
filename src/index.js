@@ -5,6 +5,8 @@ import './index.css';
 import App from './Pages/App';
 import reportWebVitals from './reportWebVitals';
 
+require('dotenv').config()
+
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>

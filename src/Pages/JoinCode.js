@@ -51,14 +51,6 @@ function JoinCode() {
   return (
     <ThemeProvider theme={theme}>
       <div style={styles.root} className="JoinCode">
-        {/*<Toolbar sx={{*/}
-        {/*            display: 'flex',*/}
-        {/*            justifyContent: 'start',*/}
-        {/*            overflowX: 'auto',*/}
-        {/*            width: '60%'*/}
-        {/*            }}>*/}
-        {/*  <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>*/}
-        {/*</Toolbar>*/}
         <Box
           sx={{
             pt: 5,

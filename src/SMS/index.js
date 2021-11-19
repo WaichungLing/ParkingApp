@@ -18,9 +18,9 @@ app.get('/api/', (req, res) => {
 // http://localhost:4000
 
 app.get('/api/send-sms', (req, res) => {
-  const {recipient, text} = req.query;
+  const {recipient} = req.query;
   client.messages.create({
-    body: text,
+    body: "Hi! Looks like your car has blocked others way, please go and check!",
     to: recipient,
     from: phoneNum,
   }).then(() => {

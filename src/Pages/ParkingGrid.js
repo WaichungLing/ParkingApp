@@ -71,10 +71,12 @@ export default function ParkingGrid(props) {
   // Replace with props later
   const n = 5;
   const m = 2;
+  const users = ['','','Michael','','','','','','',''];
 
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
   const [parkingLotDimensions, setParkingLotDimensions] = useState({});
   const [singleGridDimensions, setSingleGridDimensions] = useState({});
+  const [clickedID, setClickedID] = useState(-1);
   const [carParked, setCarParked] = useState(-1);   // This is for when you already park your car
   const [parkedID, setParkedID] = useState(-1);     // This is for add your car
   const ref = useRef(null);
@@ -112,6 +114,14 @@ export default function ParkingGrid(props) {
     }
 
   }, []);
+  
+  function handleClickItem(e,index){
+    setClickedID(index);
+  }
+  
+  function handleClickItemCancel(e){
+    setClickedID(-1);
+  }
 
   function handleDrag(e, data){
     // console.log(data);
@@ -132,18 +142,6 @@ export default function ParkingGrid(props) {
   return (
     <ThemeProvider theme={theme}>
       <div style={{...styles.root}}>
-        {/*<Toolbar sx={{*/}
-        {/*            display: 'flex',*/}
-        {/*            justifyContent: 'space-between',*/}
-        {/*            overflowX: 'auto',*/}
-        {/*            width: '50%'*/}
-        {/*            }}>*/}
-        {/*  <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>*/}
-        {/*  <ButtonGroup vairiant="text">*/}
-        {/*    <IconButton><HomeIcon></HomeIcon></IconButton>*/}
-        {/*    <IconButton><NotificationsIcon></NotificationsIcon></IconButton>*/}
-        {/*  </ButtonGroup>*/}
-        {/*</Toolbar>*/}
         <Typography style={{color: "#60A166", fontSize: '2.5vw', fontWeight: 600, marginBottom: '5vh', marginTop: '3vh'}}>
           Drag and drop your car
         </Typography>
@@ -174,10 +172,10 @@ export default function ParkingGrid(props) {
               let sz = 12.0/n;
               let ht = 1.5 * parkingLotDimensions.wd;
 
-              return (
-                <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
-                  <Item style={{...styles.singleLot, height: ht}} >
-                      {carParked === index?
+              if (carParked === index){
+                return (
+                  <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
+                    <Item style={{...styles.singleLot, height: ht}}>
                         <Draggable
                           grid={[singleGridDimensions.wd - 1/2,
                             1.5*(singleGridDimensions.wd - 1/2)]}
@@ -186,10 +184,40 @@ export default function ParkingGrid(props) {
                           <img draggable="false" src={Lambo} style={{height: 1.5*parkingLotDimensions.wd,
                             width: parkingLotDimensions.wd}}>
                           </img>
-                        </Draggable> : <Typography>{index}</Typography>}
-                  </Item>
-                </Grid>
-              );
+                        </Draggable>
+                    </Item>
+                  </Grid>
+                );
+              }else if (users[index] !== '' && index !== clickedID) {
+                return (
+                  <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
+                    <Item style={{...styles.singleLot, height: ht}}>
+                      <img draggable="false" src={Lambo} style={{
+                        height: 1.5 * parkingLotDimensions.wd,
+                        width: parkingLotDimensions.wd
+                      }} onClick={e => handleClickItem(e, index)}>
+                      </img>
+                    </Item>
+                  </Grid>
+                );
+              }else if (users[index] !== '' && index === clickedID){
+                return (
+                  <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
+                    <Item style={{...styles.singleLot, height: ht, display:'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center'}}>
+                      <Button variant="outlined" style={{width:0.8*parkingLotDimensions.wd}}>Ask a move</Button>
+                      <Button variant="outlined" style={{width:0.8*parkingLotDimensions.wd}} onClick={e => handleClickItemCancel(e)}>Cancel</Button>
+                    </Item>
+                  </Grid>
+                );
+              }else{
+                return (
+                  <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
+                    <Item style={{...styles.singleLot, height: ht}}>
+                      <Typography>{index}</Typography>
+                    </Item>
+                  </Grid>
+                );
+              }
             })}
           </Grid>
           {carParked < 0?
@@ -210,7 +238,6 @@ export default function ParkingGrid(props) {
             <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', margin:'5vh'}}>
               <Button variant='contained'>SAVE</Button>
             </div>
-            
           }
           
         </Box>

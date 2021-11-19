@@ -241,6 +241,73 @@ router.route("/apts/:aptid/:spotid/:userid/updateSpot").post(function (req, res)
 		});
 });
 
+router.route("/apts/:aptid/:spotid/addMoveTime").post(function (req, res){
+	console.log(req.params);
+	let id = req.params.aptid;
+	let s_id = req.params.spotid;
+	let new_move_time = Date(req.params.move_time);
+	let query = { _id: ObjectId(id)};
+	let db_connection = dbo.getDb("ParkingApp");
+	db_connection
+		.collection("Apts")
+		.findOne(query, function (err, result){
+			let new_spots = result.spots;
+			var the_spot;
+			for (let i = 0; i < new_spots.length; i++) {
+				for (let j = 0; j < new_spots[i].length; j++) {
+					if (new_spots[i][j]._id.toString() == s_id) {
+							new_spots[i][j]["time_cleaning"] = new_move_time;
+							console.log(new_spots);
+							db_connection.collection("Apts")
+							.updateOne(query, {$set: {"spots" : new_spots}}, function (errrr, resu) {
+								console.log("updated spots arr");
+								res.json(resu);
+							});
+					}
+				}
+			}
+			
+		});
+});
+
+router.route("/apts/:aptid/createMoveTimes").post(function (req, res){
+	let id = req.params.aptid;
+	let query = { _id: ObjectId(id)};
+	let db_connection = dbo.getDb("ParkingApp");
+	
+	db_connection
+		.collection("Apts")
+		.findOne(query, function (err, result){
+			let new_spots = result.spots;
+			for (let i = 0; i < new_spots.length; i++) {
+				for (let j = 0; j < new_spots[i].length; j++) {
+					if (new_spots[i][j]["move_time"]) {
+							for (let k = j; k > 0; k--) {
+								if (new_spots[i][k]["move_time"]) {
+									if (Date(new_spots[i][k]["move_time"]) > Date(new_spots[i][j]["move_time"])) {
+										new_spots[i][k]["move_time"] = new_spots[i][j]["move_time"]
+										db_connection.collection("Apts")
+										.updateOne(query, {$set: {"spots" : new_spots}}, function (errr, resu) {
+											console.log("updated spots arr");
+											res.json(resu);
+										});
+									}
+								}
+								else {
+									new_spots[i][k]["move_time"] = new_spots[i][j]["move_time"]
+									db_connection.collection("Apts")
+									.updateOne(query, {$set: {"spots" : new_spots}}, function (errr, resu) {
+										console.log("updated spots arr");
+										res.json(resu);
+									});
+								}
+							}
+					}
+				}
+			}
+		});
+});
+
 router.route("/apts/:id").post(function (req, res){	// update
 	let id = req.params.id;
 	let query = { _id: ObjectId(id)};

@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
+import {Link, useLocation} from 'react-router-dom';
 import styled from "@emotion/styled";
 import {Button, Typography, Stack, Box, Link as Lk, TextField } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 function Setup() {
 
@@ -62,14 +62,21 @@ function Setup() {
     fontWeight: 600
   });
   
-  // const [UserName, setUserName] = useState('');
+  let url = useLocation();
+  
   const [PhoneNumber, setPhoneNumber] = useState('');
   const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
+  const [apartments, setApartments] = useState([]);
+  const [currentUserNumber, setCurrentUserNumber] = useState('');
   const [update, setUpdate] = useState(false);
   const [showSelected, setShowSelected] = useState(false);
   
-  const apartments = [123456, 654321];
+  useEffect(()=>{
+    console.log(url);
+    setApartments(url.state.apartments);
+    setCurrentUserNumber(url.state.phone);
+  },[])
   
   function handleLink(){
     setUpdate(!update);
@@ -105,12 +112,14 @@ function Setup() {
               <div style={{display: 'flex', width: '40vw', flexDirection: 'column', alignItems: 'flex-start', marginLeft:'3vw', marginTop:'1vh', marginBottom: '-2vh'}}>
                 {apartments.map((apartment,index)=>{
                   return (
-                      <Link to={`/view/${apartment}`} style={{color: "#707070", fontSize:'2.5vh', marginTop: '1vh'}}>{apartment}</Link>
+                      <Link to={`/view/${apartment}`}
+                            style={{color: "#707070", fontSize:'2.5vh', marginTop: '1vh'}}
+                            state={{phone: currentUserNumber}}
+                            key={index}
+                      >{apartment}</Link>
                   );
                 })}
               </div>
-              
-              
               :
               null
           }
@@ -159,7 +168,7 @@ function Setup() {
               <Button style={styles.signupButton} type="submit" variant="contained" sx={{mt: 3, mb: 2}}>Update</Button>
             </Box>
           :
-            <div></div>
+            null
           }
         </Stack>
       </div>

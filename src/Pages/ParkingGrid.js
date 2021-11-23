@@ -8,6 +8,7 @@ import Lambo from '../Images/lamborghini.jpeg';
 import Draggable from 'react-draggable';
 import {Button, Typography, ButtonGroup} from "@mui/material";
 import {useLocation, useParams} from "react-router-dom";
+import axios from 'axios';
 
 const theme = createTheme({
   palette: {
@@ -68,17 +69,24 @@ let steps = {x:0,y:0}; // x how much steps in x-axis, >0 right, <0 left, y : >0 
 export default function ParkingGrid(props) {
   let params = useParams();
   let url = useLocation();
-  // Replace with props later
-  const n = 5;
-  const m = 2;
-  const users = ['','','Michael','','','','','','',''];
+  
+  // Apartment information
+  const [apartmentID, setApartmentID] = useState('');
+  const [phone, setPhone] = useState('');
+  const [userArray, setUserArray] = useState([]);
+  const [n, setN] = useState(5)
+  const [m, setM] = useState(2)
 
+  // Scalable view
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
   const [parkingLotDimensions, setParkingLotDimensions] = useState({});
   const [singleGridDimensions, setSingleGridDimensions] = useState({});
+  
   const [clickedID, setClickedID] = useState(-1);
   const [carParked, setCarParked] = useState(-1);   // This is for when you already park your car
   const [parkedID, setParkedID] = useState(-1);     // This is for add your car
+  const [sentStatus, setSentStatus] = useState(false);
+  const [sent, setSent] = useState(false);
   const ref = useRef(null);
   const ref2 = useRef(null);
 
@@ -101,6 +109,18 @@ export default function ParkingGrid(props) {
     console.log(params);
     console.log(url);
     
+    setApartmentID(params.apartmentID);
+    setPhone(url.state.phone);
+    
+    // axios.get(`http://localhost:4000/apts/${params.apartmentID}`)
+    //   .then((res)=>{
+    //     console.log(res);
+    //     setN(res.data.num_spots);
+    //     setM(res.data.num_lanes);
+    //   }).catch((err)=>{
+    //     console.log(err);
+    // })
+    
     /** TODO **/
     // 1. getApartment by params.apartmentID, if null, render "Apartment Not exist" and a link to create apartment
     // 2. if apartmentID not null, update n,m, users, spots
@@ -121,6 +141,28 @@ export default function ParkingGrid(props) {
   
   function handleClickItemCancel(e){
     setClickedID(-1);
+  }
+  
+  function handleAskMove(e){
+    let to = userArray[clickedID];
+    fetch(`http://localhost:4000/api/send-sms?recipient=${to}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setSent(true);
+          setSentStatus(true);
+        } else {
+          setSent(true);
+          setSentStatus(false);
+        }
+        setTimeout(function (){
+          setClickedID(-1);
+        }, 3500);
+        setTimeout(function (){
+          setSent(false);
+          setSentStatus(false);
+        }, 10000);
+      });
   }
 
   function handleDrag(e, data){
@@ -188,7 +230,7 @@ export default function ParkingGrid(props) {
                     </Item>
                   </Grid>
                 );
-              }else if (users[index] !== '' && index !== clickedID) {
+              }else if (userArray[index] !== '' && index !== clickedID) {
                 return (
                   <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
                     <Item style={{...styles.singleLot, height: ht}}>
@@ -200,15 +242,30 @@ export default function ParkingGrid(props) {
                     </Item>
                   </Grid>
                 );
-              }else if (users[index] !== '' && index === clickedID){
-                return (
-                  <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
-                    <Item style={{...styles.singleLot, height: ht, display:'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center'}}>
-                      <Button variant="outlined" style={{width:0.8*parkingLotDimensions.wd}}>Ask a move</Button>
-                      <Button variant="outlined" style={{width:0.8*parkingLotDimensions.wd}} onClick={e => handleClickItemCancel(e)}>Cancel</Button>
-                    </Item>
-                  </Grid>
-                );
+              }else if (userArray[index] !== '' && index === clickedID){
+                if (sent === false){
+                  return (
+                    <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
+                      <Item style={{...styles.singleLot, height: ht, display:'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center'}}>
+                        <Button variant="outlined" style={{width:0.8*parkingLotDimensions.wd}} onClick={e => handleAskMove(e)}>Ask a move</Button>
+                        <Button variant="outlined" style={{width:0.8*parkingLotDimensions.wd}} onClick={e => handleClickItemCancel(e)}>Cancel</Button>
+                      </Item>
+                    </Grid>
+                  );
+                }else{
+                  return (
+                    <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
+                      <Item style={{...styles.singleLot, height: ht, display:'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center'}}>
+                        {sentStatus?
+                          <Typography style={{color: '#60A166', fontWeight: 800}}>Notification sent successfully!</Typography>
+                          :
+                          <Typography style={{color: '#B22222', fontWeight: 800}}>Sent failed, please try again.</Typography>
+                        }
+                      </Item>
+                    </Grid>
+                  );
+                }
+                
               }else{
                 return (
                   <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>

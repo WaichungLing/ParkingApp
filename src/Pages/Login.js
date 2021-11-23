@@ -60,8 +60,14 @@ function Login() {
     setLogin(!Login);
   }
   
-  function handleLogin(){
-  
+  function handleLogin() {
+    axios.get(`http://localhost:4000/users/verify/${PhoneNumber}/${Password}`)
+      .then((response) => {
+        console.log(response)
+        navigate('select',{state:{phone:response.data.phone, apartments: response.data.apartments}})
+      }).catch((err) => {
+      console.log(err)
+    })
   }
   
   function handleSignUp(){
@@ -70,12 +76,9 @@ function Login() {
       name: UserName,
       email: Email,
       phone: PhoneNumber,
+      password: Password,
     }).then((response)=>{
-      if (response.status==201){
-        navigate('select')
-      }else{
-        console.log(response)
-      }
+      navigate('select')
     }).catch((err) => {
       console.log(err);
     })
@@ -91,12 +94,12 @@ function Login() {
           <Typography style={styles.text} component="h1">PARKING APP</Typography>
           {Login?
             <Box style={styles.inputSet} >
-              <TextField id="username"
-                         label="UserName"
-                         value={UserName}
+              <TextField id="phoneNumber"
+                         label="Phone # Start With 1"
+                         value={PhoneNumber}
                          variant="outlined"
                          margin="normal"
-                         onChange={(e) => setUserName(e.target.value)}>
+                         onChange={(e) => setPhoneNumber(e.target.value)}>
               </TextField>
               <TextField id="password"
                          label="Password"
@@ -118,7 +121,7 @@ function Login() {
                          onChange={(e) => setUserName(e.target.value)}>
               </TextField>
               <TextField id="phonenumber"
-                         label="Phone #"
+                         label="Phone# Start With 1"
                          value={PhoneNumber}
                          variant="outlined"
                          margin="normal"

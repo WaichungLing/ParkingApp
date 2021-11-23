@@ -73,21 +73,17 @@ function Notification() {
     let mm = parseInt(minute)*5;
     let dd = dayString[day];
     
-    let message = "The car owner who parked inside your car wants to move the car at "+hour+":"+mm+" on "+dd;
-    
-    console.log(message)
-    
-    fetch(`http://localhost:4000/api/send-sms?recipient=${toNum}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setSent(true);
-          setSentStatus(true);
-        } else {
-          setSent(true);
-          setSentStatus(false);
-        }
-      });
+    // fetch(`http://localhost:4000/api/send-sms?recipient=${toNum}`)
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     if (data.success) {
+    //       setSent(true);
+    //       setSentStatus(true);
+    //     } else {
+    //       setSent(true);
+    //       setSentStatus(false);
+    //     }
+    //   });
   }
   
   return (
@@ -176,10 +172,9 @@ function Notification() {
               :
                 <Typography>Sent failed, please try again.</Typography>
               }
-              
             </div>
           :
-            <div></div>
+            null
           }
           
         </Stack>

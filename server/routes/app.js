@@ -42,21 +42,63 @@ router.route("/users/:id").get(function (req, res){
 		});
 });
 
+router.route("/users/phone/:phone").get(function (req, res){
+	let phone = req.params.phone;
+	let query = { phone: phone};
+	let db_connection = dbo.getDb("ParkingApp");
+	db_connection
+		.collection("Users")
+		.findOne(query, function (err, result){
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
+			if (result == null){
+				res.status(404);
+				res.send("Error: user does not exist.\n")
+			}
+			else
+				res.json(result);
+		});
+});
+
+router.route("/users/verify/:phone/:password").get(function (req, res){
+	let phone = req.params.phone;
+	let pw = req.params.password;
+	let query = { phone: phone, password: pw};
+	let db_connection = dbo.getDb("ParkingApp");
+	db_connection
+		.collection("Users")
+		.findOne(query, function (err, result){
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
+			if (result == null){
+				res.status(404);
+				res.send("Error: user does not exist.\n")
+			}
+			else
+				res.json(result);
+		});
+});
 
 router.route("/users/create").post(function (req, res){
 	// console.log("Name: " + req.body.name);
 	// console.log("Email: " + req.body.email);
 	// console.log("Phone #: " + req.body.phone);
 
-	if (!req.body.name || !req.body.email || !req.body.phone){
+	if (!req.body.name || !req.body.email || !req.body.phone || !req.body.apartments || !req.body.password){
 		res.status(400);
-		res.send("Error: user needs name, email, and phone number.\n");
+		res.send("Error: user needs all fields.\n");
 	}
 	else {
 		const newuser = new User({
 			name: req.body.name,
 			email: req.body.email,
 			phone: req.body.phone,
+			apartments: req.body.apartments,
+			password: req.body.password
 		});
 		let db_connection = dbo.getDb("ParkingApp");		// might move this to separate function to share one instance
 		db_connection
@@ -124,7 +166,10 @@ router.route("/apts").get(function (req, res){
 	db_connection
 		.collection("Apts")
 		.find({}).toArray(function (err, result){
-			if (err) throw err;
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
 			res.json(result);
 		});
 });
@@ -136,35 +181,78 @@ router.route("/apts/:id").get(function (req, res){
 	db_connection
 		.collection("Apts")
 		.findOne(query, function (err, result){
-			if (err) throw err;
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
 			res.json(result);
 		});
 });
 
 router.route("/apts/create").post(function (req, res){
+	// console.log(req.body.join_code);
+	// console.log(req.body.num_lanes);
+	// console.log(req.body.num_spots);
+	// console.log(req.body.residents);
+
+	var residents = []
+	for (let i = 0; i < req.body.residents.length; i++) {
+		// console.log(req.body.residents[i]);
+		residents.push(ObjectId(req.body.residents[i]))
+	}
+	var spots = []
+	for (let i = 0; i < req.body.num_lanes; i++) {
+		for (let j = 0; j < req.body.num_spots; j++) {
+			spots.push([]);
+		}
+	}
+
 	let newapt = new Apt({
 		join_code: req.body.join_code,
 		num_lanes: req.body.num_lanes,
 		num_spots: req.body.num_spots,
-		residents: req.body.residents,		// passed as JSON array
-		//spots: [],				// passed as JSON array
+		residents: residents,		// passed as JSON array
+		spots: spots,				// passed as JSON array
 	});
-	var spots = []
-	for (let i = 0; i < newapt.num_lanes; i++) {
-		for (let j = 0; j < newapt.num_spots; j++) {
-			spots[i].push(new Spot());
-		}
-	}
-	newapt.spots = spots;
+	
+	// res.json(newapt);
+	
 	let db_connection = dbo.getDb("ParkingApp");		// might move this to separate function to share one instance
 	db_connection
 		.collection("Apts")
 		.insertOne(newapt, function (err, result){
-			if (err) throw err;
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
 			res.json(result);
 		});
 
 	
+});
+
+router.route("/apts/:id").post(function (req, res){	// update
+	let id = req.params.id;
+	let query = { _id: ObjectId(id)};
+	let updateuser = {
+		$set: {
+			apt_id: req.body.apt_id,
+			num_lanes: req.body.num_lanes,
+			num_spots: req.body.num_spots,
+			residents: req.body.residents,		// passed as JSON array
+			spots: req.body.spots,				// passed as JSON array
+		},
+	};
+	let db_connection = dbo.getDb("ParkingApp");
+	db_connection
+		.collection("Apts")
+		.updateOne(query, updateuser, function (err, result){
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
+			res.json(result);
+		});
 });
 
 router.route("/apts/:id/getUsers").get(function (req, res){
@@ -214,26 +302,6 @@ router.route("/apts/:aptid/:spotid/updateSpot").post(function (req, res){
 		});
 });
 
-router.route("/apts/:id").post(function (req, res){	// update
-	let id = req.params.id;
-	let query = { _id: ObjectId(id)};
-	let updateuser = {
-		$set: {
-			apt_id: req.body.apt_id,
-			num_lanes: req.body.num_lanes,
-			num_spots: req.body.num_spots,
-			residents: req.body.residents,		// passed as JSON array
-			spots: req.body.spots,				// passed as JSON array
-		},
-	};
-	let db_connection = dbo.getDb("ParkingApp");
-	db_connection
-		.collection("Apts")
-		.updateOne(query, updateuser, function (err, result){
-			if (err) throw err;
-			res.json(result);
-		});
-});
 
 router.route("/apts/:id").delete(function (req, res){
 	let id = req.params.id;
@@ -242,7 +310,10 @@ router.route("/apts/:id").delete(function (req, res){
 	db_connection
 		.collection("Users")
 		.deleteOne(query, function (err, result){
-			if (err) throw err;
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
 			res.json(result);
 		});
 });

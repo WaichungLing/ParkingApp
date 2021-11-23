@@ -10,6 +10,7 @@ const Schema = mongoose.Schema;
 const apt_schema = new Schema({
     join_code: {type: Number, required: true},
     residents: [{ type:mongoose.Schema.Types.ObjectId, ref: 'User', required: true}],
+    // residents: [{ type: String, required: true}],
     num_lanes: { type: Number, required: true},
     num_spots: { type: Number, required: true},
     spots: {type: mongoose.Mixed, required: true},
@@ -31,14 +32,15 @@ apt_schema.statics.sendNotifications = function(callback){
             body: `Hi ${testName}. Time to move your car!`,
             /* eslint-enable max-len */
         };
-        client.messages.create(options, function(err, response) {
-            if (err) {
-                console.error(err);
-            }
-            else {
-                console.log(`Message sent to ${testName}: ${testNumber}`);
-            }
-        });
+
+        // client.messages.create(options, function(err, response) {
+        //     if (err) {
+        //         console.error(err);
+        //     }
+        //     else {
+        //         console.log(`Message sent to ${testName}: ${testNumber}`);
+        //     }
+        // });
 
         if (callback){
         	callback.call();

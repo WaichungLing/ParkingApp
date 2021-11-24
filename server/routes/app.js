@@ -5,6 +5,10 @@ let Apt = require("../models/apartment.model");
 let Spot = require("../models/spot.model");
 const dbo = require("../db/conn");
 const ObjectId = require("mongodb").ObjectId;			// convert id from String to ObjectID
+const Twilio = require('twilio');
+const twilio_sid = "ACeaac78e0d7959ea014354d2bd33e9ddc";
+const twilio_token = "061f6fe58b8f158038e84e84613ebf60";
+const twilio_phone_number = 18506085395;
 
 // may move to separate files later
 
@@ -252,7 +256,6 @@ router.route("/apts/:id/getUsers").get(function (req, res){
 });
 
 router.route("/apts/:id/getSpots").get(function (req, res){
-	console.log("getting all spots in apt");
 	let id = req.params.id;
 	let query = { _id: ObjectId(id)};
 	let db_connection = dbo.getDb("ParkingApp");
@@ -263,6 +266,45 @@ router.route("/apts/:id/getSpots").get(function (req, res){
 			res.json(result.spots);
 		});
 });
+
+router.route("/apts/:id/sendNotifs").get(function (req, res){
+	let id = req.params.id;
+	let query = { _id: ObjectId(id)};
+	let db_connection = dbo.getDb("ParkingApp");
+	db_connection
+		.collection("Apts")
+		.findOne(query, function (err, result){
+			const nowDate = new Date();
+			console.log(nowDate)
+			for (let i = 0; i < result.spots.length; i++) {
+				if (result.spots[i]["movetime"] && result.spots[i]["phone"]) {
+					console.log(new Date(result.spots[i]["movetime"]))
+					if (nowDate >= new Date(result.spots[i]["movetime"])) {
+						console.log("got a need to move time for spot in pos " + i);
+						toNumber = result.spots[i]["phone"]
+						const client = new Twilio(twilio_sid, twilio_token);
+							const options = {
+								to: `+ ${toNumber}`,
+								from: `+ ${twilio_phone_number}`,
+								/* eslint-disable max-len */
+								body: `Time to move your car!`,
+								/* eslint-enable max-len */
+							};
+							client.messages.create(options, function(err, response) {
+								if (err) {
+									console.error(err);
+								}
+								else {
+									console.log(`Message sent to: ${toNumber}`);
+								}
+							});
+					}
+				}
+			}
+			res.json(result);
+		});
+});
+
 
 
 

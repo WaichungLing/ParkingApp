@@ -278,8 +278,10 @@ router.route("/apts/:id/sendNotifs").get(function (req, res){
 			console.log(nowDate)
 			for (let i = 0; i < result.spots.length; i++) {
 				if (result.spots[i]["movetime"] && result.spots[i]["phone"]) {
-					console.log(new Date(result.spots[i]["movetime"]))
-					if (nowDate >= new Date(result.spots[i]["movetime"])) {
+					spotDate = new Date(result.spots[i]["movetime"])
+					console.log(spotDate)
+					console.log(new Date(spotDate.getTime() - 30*60000))
+					if (nowDate >= spotDate - 30*60000) {
 						console.log("got a need to move time for spot in pos " + i);
 						toNumber = result.spots[i]["phone"]
 						const client = new Twilio(twilio_sid, twilio_token);
@@ -287,7 +289,7 @@ router.route("/apts/:id/sendNotifs").get(function (req, res){
 								to: `+ ${toNumber}`,
 								from: `+ ${twilio_phone_number}`,
 								/* eslint-disable max-len */
-								body: `Time to move your car!`,
+								body: `Time to move your car! Make sure it is moved by ${spotDate.getHours()}:${spotDate.getMinutes()}`,
 								/* eslint-enable max-len */
 							};
 							client.messages.create(options, function(err, response) {

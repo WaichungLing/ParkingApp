@@ -164,7 +164,6 @@ router.route("/users/:id").delete(function (req, res){
 
 router.route("/apts").get(function (req, res){
 	let db_connection = dbo.getDb("ParkingApp");
-	console.log("getting all users");
 	db_connection
 		.collection("Apts")
 		.find({}).toArray(function (err, result){
@@ -201,7 +200,7 @@ router.route("/apts/create").post(function (req, res){
 	var spots = []
 	for (let i = 0; i < req.body.num_lanes; i++) {
 		for (let j = 0; j < req.body.num_spots; j++) {
-			spots.push([]);
+			spots.push({});
 		}
 	}
 	let newapt = new Apt({
@@ -267,82 +266,34 @@ router.route("/apts/:id/getSpots").get(function (req, res){
 
 
 
-router.route("/apts/:aptid/:spotid/:userid/updateSpot").post(function (req, res){
-	console.log(req.params);
-	let id = req.params.aptid;
-	let u_id = ObjectId(req.params.userid);
-
-	let s_id = req.params.spotid;
-	let query = { _id: ObjectId(id)};
-	let db_connection = dbo.getDb("ParkingApp");
-	db_connection
-		.collection("Apts")
-		.findOne(query, function (err, result){
-			let new_spots = result.spots;
-			var the_spot;
-			for (let i = 0; i < new_spots.length; i++) {
-				for (let j = 0; j < new_spots[i].length; j++) {
-					//console.log(spots[i][j]._id.toString());
-					if (new_spots[i][j]._id.toString() == s_id) {
-						db_connection.collection("Users")
-						.findOne({_id: u_id}, function (errr, post){
-							new_spots[i][j]["person"] = post;
-							console.log(new_spots);
-							db_connection.collection("Apts")
-							.updateOne(query, {$set: {"spots" : new_spots}}, function (errrr, resu) {
-								console.log("updated spots arr");
-								res.json(resu);
-							})
-						});
-					}
-				}
-			}
-			
-		});
-});
-
-router.route("/apts/:aptid/:spotid/addMoveTime").post(function (req, res){
-	console.log(req.params);
-	let id = req.params.aptid;
-	let s_id = req.params.spotid;
-	let new_move_time = Date(req.params.move_time);
-	let query = { _id: ObjectId(id)};
-	let db_connection = dbo.getDb("ParkingApp");
-	db_connection
-		.collection("Apts")
-		.findOne(query, function (err, result){
-			let new_spots = result.spots;
-			var the_spot;
-			for (let i = 0; i < new_spots.length; i++) {
-				for (let j = 0; j < new_spots[i].length; j++) {
-					if (new_spots[i][j]._id.toString() == s_id) {
-							new_spots[i][j]["time_cleaning"] = new_move_time;
-							console.log(new_spots);
-							db_connection.collection("Apts")
-							.updateOne(query, {$set: {"spots" : new_spots}}, function (errrr, resu) {
-								console.log("updated spots arr");
-								res.json(resu);
-							});
-					}
-				}
-			}
-			
-		});
-});
-/*
-router.route("/apts/:aptid/createMoveTimes").post(function (req, res){
+router.route("/apts/:aptid/updateSpots").post(function (req, res){
 	let id = req.params.aptid;
 	let query = { _id: ObjectId(id)};
 	let times_arr = req.body.times_arr;
 	let db_connection = dbo.getDb("ParkingApp");
-	
 	db_connection
 		.collection("Apts")
-		.updateOne(query, function (err, result){
-			
+		.findOne(query, function (err, result){
+			let iter = 0;
+			for (let i = 0; i < result.num_lanes; i++) {
+				for (let j = 0; j < result.num_spots; j++) {
+					if (times_arr[iter]["movetime"]) {
+						for (let k = 0; k <= j; k++) {
+							times_arr[iter - k]["movetime"] = times_arr[iter]["movetime"]
+						}
+					}
+					iter++
+				}
+			}
+			db_connection
+			.collection("Apts")
+			.updateOne(query, { $set: { spots : times_arr } }, function (errr, resu) {
+				if (errr) throw errr;
+				res.json(resu);
+			});
 		});
 });
-*/
+
 router.route("/apts/:id").post(function (req, res){	// update
 	let id = req.params.id;
 	let query = { _id: ObjectId(id)};

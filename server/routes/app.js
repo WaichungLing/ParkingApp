@@ -96,11 +96,16 @@ router.route("/users/create").post(function (req, res){
 		res.send("Error: user needs all fields.\n");
 	}
 	else {
+		let apartments = []
+		if (req.body.apartments){
+			apartments = req.body.apartments
+		}
+		//console.log(apartments)
 		const newuser = new User({
 			name: req.body.name,
 			email: req.body.email,
 			phone: req.body.phone,
-			apartments: [],
+			apartments: apartments,
 			password: req.body.password
 		});
 		let db_connection = dbo.getDb("ParkingApp");		// might move this to separate function to share one instance
@@ -118,19 +123,20 @@ router.route("/users/create").post(function (req, res){
 	}
 });
 
-router.route("/users/:id").post(function (req, res){	// update
-	if (!req.body.name || !req.body.email || !req.body.phone){
+router.route("/users/update/:phone").post(function (req, res){	// update
+	if (!req.body.name || !req.body.email || !req.body.password){
 		res.status(400);
 		res.send("Error: updated user needs name, email, and phone number.\n");
 	}
 	else {
-		let id = req.params.id;
-		let query = { _id: ObjectId(id)};
+		let phone = req.params.phone;
+		let query = { phone: phone};
 		let updateuser = {
 			$set: {
 				name: req.body.name,
 				email: req.body.email,
-				phone: req.body.phone,
+				phone: phone,
+				password: req.body.password,
 			},
 		};
 		let db_connection = dbo.getDb("ParkingApp");
@@ -146,9 +152,9 @@ router.route("/users/:id").post(function (req, res){	// update
 	}
 });
 
-router.route("/users/:id").delete(function (req, res){
-	let id = req.params.id;
-	let query = { _id: ObjectId(id)};
+router.route("/users/:phone").delete(function (req, res){
+	let phone = req.params.phone;
+	let query = { phone: phone};
 	let db_connection = dbo.getDb("ParkingApp");
 	db_connection
 		.collection("Users")

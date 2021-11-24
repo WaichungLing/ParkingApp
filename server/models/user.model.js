@@ -5,7 +5,8 @@ const user_schema = new Schema({
     name: { type: String, required: true},
     email: { type: String, required: true},
     phone: { type: String, required: true},
-    apartments: [{ type:mongoose.Schema.Types.ObjectId, ref: 'Apt', required: true}],
+    //apartments: [{ type:mongoose.Schema.Types.ObjectId, ref: 'Apt', required: true}],
+    apartments: [String],
     password: { type: String, required: true},
 })
 

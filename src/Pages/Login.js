@@ -55,6 +55,8 @@ function Login() {
   const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
   const [Login, setLogin] = useState(false);
+  const [errorLogin, setErrorLogin] = useState(false);
+  const [errorSignUp, setErrorSignUp] = useState(false);
 
   function handleClick() {
     setLogin(!Login);
@@ -64,9 +66,11 @@ function Login() {
     axios.get(`http://localhost:4000/users/verify/${PhoneNumber}/${Password}`)
       .then((response) => {
         console.log(response)
+        setErrorLogin(false);
         navigate('select',{state:{phone:response.data.phone, apartments: response.data.apartments}})
       }).catch((err) => {
-      console.log(err)
+        console.log(err)
+        setErrorLogin(true);
     })
   }
   
@@ -78,9 +82,11 @@ function Login() {
       phone: PhoneNumber,
       password: Password,
     }).then((response)=>{
-      navigate('select')
+      setErrorSignUp(false)
+      navigate('select', {state:{phone:PhoneNumber, apartments: []}})
     }).catch((err) => {
       console.log(err);
+      setErrorSignUp(true);
     })
   }
 
@@ -106,6 +112,8 @@ function Login() {
                          value={Password}
                          variant="outlined"
                          margin="normal"
+                         error = {errorLogin}
+                         helperText={errorLogin?"Combination doesn't exist":null}
                          onChange={(e) => setPassword(e.target.value)}>
               </TextField>
               <Button style={styles.signupButton} type="submit" variant="contained" sx={{mt: 3, mb: 2}} onClick={handleLogin}>LOGIN</Button>
@@ -118,6 +126,8 @@ function Login() {
                          value={UserName}
                          variant="outlined"
                          margin="normal"
+                         error = {errorSignUp}
+                         helperText={errorSignUp?"Something went wrong, please try again":null}
                          onChange={(e) => setUserName(e.target.value)}>
               </TextField>
               <TextField id="phonenumber"

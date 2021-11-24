@@ -29,15 +29,7 @@ function getWindowDimensions() {
   };
 }
 
-const Item = styled(Paper)(({ theme }) => ({
-  // ...theme.typography.body2,
-  // padding: theme.spacing(1),
-  // textAlign: 'center',
-  // color: theme.palette.text.secondary,
-  // display: 'flex',
-  // flex: 1,
-  // flexDirection: 'column',
-}));
+const Item = styled(Paper)(({ theme }) => ({}));
 
 const styles = {
   root:{
@@ -73,7 +65,7 @@ export default function ParkingGrid(props) {
   // Apartment information
   const [apartmentID, setApartmentID] = useState('');
   const [phone, setPhone] = useState('');
-  const [userArray, setUserArray] = useState([]);
+  const [userArray, setUserArray] = useState(['','','','','','','','','','']);
   const [n, setN] = useState(5)
   const [m, setM] = useState(2)
 
@@ -278,7 +270,7 @@ export default function ParkingGrid(props) {
             })}
           </Grid>
           {carParked < 0?
-            <div>
+            <div style={{display: 'flex', flexDirection: 'column'}}>
               <Draggable
                 positionOffset={{x:1,y:1}}
                 grid={[singleGridDimensions.wd - 1/2,
@@ -289,7 +281,10 @@ export default function ParkingGrid(props) {
                   width: parkingLotDimensions.wd}}>
                 </img>
               </Draggable>
-              <Button variant='contained' style={{marginLeft: '10vw'}}>SAVE</Button>
+              <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+                <Button variant='contained' style={{marginBottom: 20}}>SAVE</Button>
+              </div>
+              
             </div>
             :
             <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', margin:'5vh'}}>

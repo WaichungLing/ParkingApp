@@ -132,11 +132,37 @@ router.route("/users/update/:phone").post(function (req, res){	// update
 		let phone = req.params.phone;
 		let query = { phone: phone};
 		let updateuser = {
+				$set: {
+					name: req.body.name,
+					email: req.body.email,
+					phone: phone,
+					password: req.body.password,
+				},
+		};
+		let db_connection = dbo.getDb("ParkingApp");
+		db_connection
+			.collection("Users")
+			.updateOne(query, updateuser, function (err, result){
+				if (err){
+					res.status(500);
+					res.send(err.message);
+				}
+				res.json(result);
+			});
+	}
+});
+
+router.route("/users/updateApt/:phone").post(function (req, res){	// update
+	if (!req.body.apartments){
+		res.status(400);
+		res.send("Error: No apartments array attached.\n");
+	}
+	else {
+		let phone = req.params.phone;
+		let query = { phone: phone};
+		let updateuser = {
 			$set: {
-				name: req.body.name,
-				email: req.body.email,
-				phone: phone,
-				password: req.body.password,
+				apartments: req.body.apartments,
 			},
 		};
 		let db_connection = dbo.getDb("ParkingApp");

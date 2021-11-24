@@ -200,7 +200,7 @@ function Setup() {
           }
           <Link to="/join"
                 style={{ textDecoration: 'none', color: 'white'}}
-                state={{phone: currentUserNumber}}
+                state={{phone: currentUserNumber, apartments: apartments}}
           >
             <PushButton type="submit" variant="contained">Join an existing one</PushButton>
           </Link>

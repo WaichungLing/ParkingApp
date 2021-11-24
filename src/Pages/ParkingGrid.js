@@ -63,7 +63,7 @@ export default function ParkingGrid(props) {
   let url = useLocation();
   
   // Apartment information
-  const [apartmentID, setApartmentID] = useState('');
+  const [JoinCode, setJoinCode] = useState('');
   const [phone, setPhone] = useState('');
   const [userArray, setUserArray] = useState(['','','','','','','','','','']);
   const [n, setN] = useState(5)
@@ -76,7 +76,6 @@ export default function ParkingGrid(props) {
   
   const [clickedID, setClickedID] = useState(-1);
   const [carParked, setCarParked] = useState(-1);   // This is for when you already park your car
-  const [parkedID, setParkedID] = useState(-1);     // This is for add your car
   const [sentStatus, setSentStatus] = useState(false);
   const [sent, setSent] = useState(false);
   const ref = useRef(null);
@@ -101,7 +100,7 @@ export default function ParkingGrid(props) {
     console.log(params);
     console.log(url);
     
-    setApartmentID(params.apartmentID);
+    setJoinCode(params.apartmentID);
     setPhone(url.state.phone);
     
     // axios.get(`http://localhost:4000/apts/${params.apartmentID}`)
@@ -118,7 +117,7 @@ export default function ParkingGrid(props) {
     // 2. if apartmentID not null, update n,m, users, spots
     // 3. Check the current user has parked in this apartment or not, update ${carParked}
     /** TODO **/
-    let id = -1; // should be just carPark, for static testing only, remove when link backend
+    let id = -1; // should be just carPark, for static testing only, remove when link backend, should loop
     // Once return carParked, setCarParked and updated parkedID to set steps
     if (id >= 0){
       steps.x = id % n;
@@ -169,8 +168,10 @@ export default function ParkingGrid(props) {
       steps.x++;
     }
     // console.log(steps);
-    setParkedID((m-steps.y)*n+steps.x);
+    let id = (m-steps.y)*n+steps.x;
     console.log((m-steps.y)*n+steps.x);
+    userArray[id] = phone;
+    setUserArray([...userArray]);
   }
 
   return (

@@ -1,4 +1,4 @@
-import { Button, Box, IconButton, Link as sLink, Typography, TextField, Toolbar } from "@mui/material";
+import { Button, Box, IconButton, Link as SLink, Typography, TextField, Toolbar } from "@mui/material";
 import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -45,6 +45,7 @@ function JoinCode() {
   const [clicked, setClicked] = useState(false);
   const [error, setError] = useState(false);
   const [phone, setPhone] = useState('');
+  const [apartments, setApartments] = useState([]);
   
   function handleClickButton(){
     setClicked(!clicked);
@@ -59,7 +60,11 @@ function JoinCode() {
       .then(res => {
         setError(false);
         /** TODO **/
-        // update User.apartments
+        apartments.push(JoinCode);
+        axios.post(`http://localhost:4000/users/updateApt/${phone}`,{
+          title: "update apartment list",
+          apartments: apartments
+        })
         /** TODO **/
         navigate(`/view/${JoinCode}`, {state:{phone: phone}});
       }).catch(err => {
@@ -70,7 +75,9 @@ function JoinCode() {
   
   useEffect(()=>{
     // Keep track of the current user
+    console.log(url.state.apartments);
     setPhone(url.state.phone);
+    setApartments(url.state.apartments);
   },[])
 
   return (
@@ -92,11 +99,11 @@ function JoinCode() {
 										value={JoinCode}
 										variant="outlined"
                     error = {error}
-                    helperText="Invalid join code."
+                    helperText={error?"Invalid join code.":null}
 										onChange={(e) => handleJoinCode(e)}></TextField>
 
         <Button style={{marginTop:'10vh', marginBottom: '3vh'}} type="submit" variant="contained" onClick={e=>handleJoin(e)}> Join </Button>
-				<sLink style={{color: "#707070"}} onClick={handleClickButton}>What is Join code?</sLink>
+				<SLink style={{color: "#707070"}} onClick={handleClickButton}>What is Join code?</SLink>
         {clicked ?
           <div style={{width:'40vw', marginTop:'1vh'}}>
             <Typography style={{color: "#707070"}}>

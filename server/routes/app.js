@@ -4,10 +4,11 @@ let User = require("../models/user.model");
 let Apt = require("../models/apartment.model");
 let Spot = require("../models/spot.model");
 const dbo = require("../db/conn");
-const ObjectId = require("mongodb").ObjectId;			// convert id from String to ObjectID
-const twilio_sid = process.env.TWILIO_SID;
-const twilio_token = process.env.TWILIO_AUTHTOKEN;
-const twilio_phone_number = process.env.TWILIO_PHONE_NUMBER;
+const ObjectId = require("mongodb").ObjectId;	
+const Twilio = require('twilio');		// convert id from String to ObjectID
+const twilio_sid = "ACeaac78e0d7959ea014354d2bd33e9ddc";
+const twilio_token = "061f6fe58b8f158038e84e84613ebf60";
+const twilio_phone_number = 14086660152;
 
 // may move to separate files later
 
@@ -240,7 +241,7 @@ router.route("/apts/create").post(function (req, res){
 	var spots = []
 	for (let i = 0; i < req.body.num_lanes; i++) {
 		for (let j = 0; j < req.body.num_spots; j++) {
-			spots.push([]);
+			spots.push({});
 		}
 	}
 
@@ -266,6 +267,77 @@ router.route("/apts/create").post(function (req, res){
 		});
 
 	
+});
+
+router.route("/apts/:id/sendNotifs").get(function (req, res){
+	let id = req.params.id;
+	let query = { _id: ObjectId(id)};
+	let db_connection = dbo.getDb("ParkingApp");
+	db_connection
+		.collection("Apts")
+		.findOne(query, function (err, result){
+			const nowDate = new Date();
+			console.log(nowDate)
+			for (let i = 0; i < result.spots.length; i++) {
+				if (result.spots[i]["movetime"] && result.spots[i]["phone"]) {
+					spotDate = new Date(result.spots[i]["movetime"])
+					console.log(spotDate)
+					console.log(new Date(spotDate.getTime() - 30*60000))
+					if (nowDate >= spotDate - 30*60000) {
+						console.log("got a need to move time for spot in pos " + i);
+						toNumber = result.spots[i]["phone"]
+						const client = new Twilio(twilio_sid, twilio_token);
+							const options = {
+								to: `+ ${toNumber}`,
+								from: `+ ${twilio_phone_number}`,
+								/* eslint-disable max-len */
+								body: `Time to move your car! Make sure it is moved by ${spotDate.getHours()}:${spotDate.getMinutes()}`,
+								/* eslint-enable max-len */
+							};
+							client.messages.create(options, function(err, response) {
+								if (err) {
+									console.error(err);
+								}
+								else {
+									console.log(`Message sent to: ${toNumber}`);
+								}
+							});
+					}
+				}
+			}
+			res.json(result);
+		});
+});
+
+
+
+
+router.route("/apts/:aptid/updateSpots").post(function (req, res){
+	let id = req.params.aptid;
+	let query = { _id: ObjectId(id)};
+	let times_arr = req.body.times_arr;
+	let db_connection = dbo.getDb("ParkingApp");
+	db_connection
+		.collection("Apts")
+		.findOne(query, function (err, result){
+			let iter = 0;
+			for (let i = 0; i < result.num_lanes; i++) {
+				for (let j = 0; j < result.num_spots; j++) {
+					if (times_arr[iter]["movetime"]) {
+						for (let k = 0; k <= j; k++) {
+							times_arr[iter - k]["movetime"] = times_arr[iter]["movetime"]
+						}
+					}
+					iter++
+				}
+			}
+			db_connection
+			.collection("Apts")
+			.updateOne(query, { $set: { spots : times_arr } }, function (errr, resu) {
+				if (errr) throw errr;
+				res.json(resu);
+			});
+		});
 });
 
 router.route("/apts/:id").post(function (req, res){	// update

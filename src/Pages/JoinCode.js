@@ -59,13 +59,11 @@ function JoinCode() {
     axios.get(`http://localhost:4000/apts/${JoinCode}`)
       .then(res => {
         setError(false);
-        /** TODO **/
         apartments.push(JoinCode);
         axios.post(`http://localhost:4000/users/updateApt/${phone}`,{
           title: "update apartment list",
           apartments: apartments
         })
-        /** TODO **/
         navigate(`/view/${JoinCode}`, {state:{phone: phone}});
       }).catch(err => {
         console.log(err);

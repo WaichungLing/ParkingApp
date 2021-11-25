@@ -9,6 +9,7 @@ import Draggable from 'react-draggable';
 import {Button, Typography, ButtonGroup} from "@mui/material";
 import {useLocation, useParams} from "react-router-dom";
 import axios from 'axios';
+import async from "async";
 
 const theme = createTheme({
   palette: {
@@ -65,7 +66,7 @@ export default function ParkingGrid(props) {
   // Apartment information
   const [JoinCode, setJoinCode] = useState('');
   const [phone, setPhone] = useState('');
-  const [userArray, setUserArray] = useState(['','','','','','','','','','']);
+  const [userArray, setUserArray] = useState([]);
   const [n, setN] = useState(5)
   const [m, setM] = useState(2)
 
@@ -100,17 +101,19 @@ export default function ParkingGrid(props) {
     console.log(params);
     console.log(url);
     
-    setJoinCode(params.apartmentID);
+    setJoinCode(params.JoinCode);
     setPhone(url.state.phone);
     
-    // axios.get(`http://localhost:4000/apts/${params.apartmentID}`)
-    //   .then((res)=>{
-    //     console.log(res);
-    //     setN(res.data.num_spots);
-    //     setM(res.data.num_lanes);
-    //   }).catch((err)=>{
-    //     console.log(err);
-    // })
+    axios.get(`http://localhost:4000/apts/${params.JoinCode}`)
+      .then((res)=>{
+        console.log(res);
+        setN(res.data.num_spots);
+        setM(res.data.num_lanes);
+        setUserArray(res.data.spots);
+        console.log(userArray);
+      }).catch((err)=>{
+        console.log(err);
+    })
     
     /** TODO **/
     // 1. getApartment by params.apartmentID, if null, render "Apartment Not exist" and a link to create apartment
@@ -223,7 +226,7 @@ export default function ParkingGrid(props) {
                     </Item>
                   </Grid>
                 );
-              }else if (userArray[index] !== '' && index !== clickedID) {
+              }else if ( index !== clickedID) {
                 return (
                   <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
                     <Item style={{...styles.singleLot, height: ht}}>
@@ -235,7 +238,7 @@ export default function ParkingGrid(props) {
                     </Item>
                   </Grid>
                 );
-              }else if (userArray[index] !== '' && index === clickedID){
+              }else if ( index === clickedID){
                 if (sent === false){
                   return (
                     <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
@@ -292,7 +295,6 @@ export default function ParkingGrid(props) {
               <Button variant='contained'>SAVE</Button>
             </div>
           }
-          
         </Box>
       </div>
     </ThemeProvider>

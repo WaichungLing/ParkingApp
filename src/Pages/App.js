@@ -15,7 +15,7 @@ function App() {
         <Route path="select" element={<Setup />}/>
         <Route path="join" element={<JoinCode/>}/>
         <Route path="create" element={<CreateApartment/>}/>
-        <Route path="view/:apartmentID" element={<ParkingGrid/>}/>
+        <Route path="view/:JoinCode" element={<ParkingGrid/>}/>
         <Route path="notification" element={<Notification/>}/>
         <Route
           path="*"

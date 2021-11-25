@@ -204,7 +204,10 @@ function Setup() {
           >
             <PushButton type="submit" variant="contained">Join an existing one</PushButton>
           </Link>
-          <Link to="/create" style={{ textDecoration: 'none', color: 'white'}}>
+          <Link to="/create"
+                style={{ textDecoration: 'none', color: 'white'}}
+                state={{phone: currentUserNumber, apartments: apartments}}
+          >
             <PushButton type="submit" variant="contained">Create a new one</PushButton>
           </Link>
           {update?

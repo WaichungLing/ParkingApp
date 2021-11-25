@@ -1,7 +1,8 @@
 import {Button, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Toolbar, Typography} from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import {useState} from "react";
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import {useEffect, useState} from "react";
+import axios from 'axios';
+import {useLocation, useNavigate} from "react-router-dom";
 
 export default function CreateApartment(){
 
@@ -39,7 +40,12 @@ export default function CreateApartment(){
       marginRight: '3vw',
     }
   };
-
+  
+  let navigate = useNavigate();
+  let url = useLocation();
+  
+  const [phone, setPhone] = useState('');
+  
   const [ApartmentName, setApartmentName] = useState('');
   const [Address, setAddress] = useState('');
   const [Zipcode, setZipcode] = useState('');
@@ -47,6 +53,13 @@ export default function CreateApartment(){
   const [NumberPerTandem, setNumberPerTandem] = useState('');
   const [day, setDay] = useState('');
   const [time, setTime] = useState('');
+  const [error, setError] = useState(false);
+  const [apartments, setApartments] = useState([]);
+  
+  useEffect(()=>{
+    setPhone(url.state.phone);
+    setApartments(url.state.apartments);
+  },[])
 
   function handleNumberOfTandem(e) {
     let s = e.target.value;
@@ -67,18 +80,50 @@ export default function CreateApartment(){
   const handleTimeChange = (event) => {
     setTime(event.target.value);
   };
+  
+  
+  async function handleCreate(e) {
+    let found = false;
+    let randomJoinCode;
+    let JoinCode;
+    let i = 0;
+    while(!found){
+      randomJoinCode = Math.floor(Math.random() * (10000 - 1000) + 1000);
+      JoinCode = randomJoinCode.toString();
+      console.log("Trying join_code: ", JoinCode);
+      await axios.get(`http://localhost:4000/apts/${JoinCode}`)
+        .then((res)=>{
+          if (res.data == null){
+            console.log("done")
+            found = true;
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+    if (found){
+      axios.post("http://localhost:4000/apts/create", {
+        join_code: JoinCode,
+        num_lanes: parseInt(NumberPerTandem),
+        num_spots: parseInt(NumberOfTandem),
+        phone: phone,
+      }).then(()=>{
+        apartments.push(JoinCode);
+        axios.post(`http://localhost:4000/users/updateApt/${phone}`,{
+          title: "update apartment list",
+          apartments: apartments
+        })
+        navigate(`/view/${randomJoinCode}`, {state:{phone: phone}});
+      }).catch(()=>{
+        setError(true);
+      })
+    }
+  }
 
   return (
     <ThemeProvider theme={theme}>
       <div style={styles.root}>
-        {/*<Toolbar sx={{*/}
-        {/*            display: 'flex',*/}
-        {/*            justifyContent: 'start',*/}
-        {/*            overflowX: 'auto',*/}
-        {/*            width: '60%'*/}
-        {/*            }}>*/}
-        {/*  <IconButton><ArrowBackIosNewIcon></ArrowBackIosNewIcon></IconButton>*/}
-        {/*</Toolbar>*/}
         <Typography style={{color: "#60A166", fontSize: '2.5vw', fontWeight: 600}}>Create a new apartment parking</Typography>
         <box style={styles.fields}>
           <box style={styles.inputSet}>
@@ -86,6 +131,8 @@ export default function CreateApartment(){
             <TextField fullWidth
                        value={ApartmentName}
                        variant="outlined"
+                       error = {error}
+                       helperText={error?"Something went wrong, please try again":null}
                        onChange={(e) => setApartmentName(e.target.value)}
             />
           </box>
@@ -166,9 +213,8 @@ export default function CreateApartment(){
             </div>
           </box>
         </box>
-        <Button style={{margin:'5vh'}} type="submit" variant="contained"> CREATE </Button>
+        <Button style={{margin:'5vh'}} type="submit" variant="contained" onClick={e=>handleCreate(e)}> CREATE </Button>
       </div>
     </ThemeProvider>
-
   );
 }

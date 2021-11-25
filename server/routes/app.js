@@ -4,11 +4,11 @@ let User = require("../models/user.model");
 let Apt = require("../models/apartment.model");
 let Spot = require("../models/spot.model");
 const dbo = require("../db/conn");
-const ObjectId = require("mongodb").ObjectId;	
+const ObjectId = require("mongodb").ObjectId;
 const Twilio = require('twilio');		// convert id from String to ObjectID
-const twilio_sid = "ACeaac78e0d7959ea014354d2bd33e9ddc";
-const twilio_token = "061f6fe58b8f158038e84e84613ebf60";
-const twilio_phone_number = 14086660152;
+const twilio_sid = process.env.TWILIO_SID;
+const twilio_token = process.env.TWILIO_AUTHTOKEN;
+const twilio_phone_number = process.env.TWILIO_PHONE_NUMBER;
 
 // may move to separate files later
 
@@ -212,7 +212,7 @@ router.route("/apts").get(function (req, res){
 
 router.route("/apts/:join_code").get(function (req, res){
 	let join_code = parseInt(req.params.join_code);
-	console.log(join_code);
+	console.log("here ",join_code);
 	let query = {join_code: join_code};
 	let db_connection = dbo.getDb("ParkingApp");
 	db_connection
@@ -233,17 +233,20 @@ router.route("/apts/create").post(function (req, res){
 	// console.log(req.body.num_spots);
 	// console.log(req.body.residents);
 
-	var residents = []
-	for (let i = 0; i < req.body.residents.length; i++) {
-		// console.log(req.body.residents[i]);
-		residents.push(ObjectId(req.body.residents[i]))
-	}
-	var spots = []
+	let residents = []
+	residents.push(req.body.phone);
+	
+	let spots = []
 	for (let i = 0; i < req.body.num_lanes; i++) {
 		for (let j = 0; j < req.body.num_spots; j++) {
 			spots.push({});
 		}
 	}
+	
+	/** TODO **/
+	// handle move time
+	const testDate = new Date('December 17, 1995 03:24:00');
+	/** TODO **/
 
 	let newapt = new Apt({
 		join_code: req.body.join_code,
@@ -251,9 +254,8 @@ router.route("/apts/create").post(function (req, res){
 		num_spots: req.body.num_spots,
 		residents: residents,		// passed as JSON array
 		spots: spots,				// passed as JSON array
+		move_time: testDate,		// TODO
 	});
-	
-	// res.json(newapt);
 	
 	let db_connection = dbo.getDb("ParkingApp");		// might move this to separate function to share one instance
 	db_connection
@@ -280,12 +282,12 @@ router.route("/apts/:id/sendNotifs").get(function (req, res){
 			console.log(nowDate)
 			for (let i = 0; i < result.spots.length; i++) {
 				if (result.spots[i]["movetime"] && result.spots[i]["phone"]) {
-					spotDate = new Date(result.spots[i]["movetime"])
+					let spotDate = new Date(result.spots[i]["movetime"])
 					console.log(spotDate)
 					console.log(new Date(spotDate.getTime() - 30*60000))
 					if (nowDate >= spotDate - 30*60000) {
 						console.log("got a need to move time for spot in pos " + i);
-						toNumber = result.spots[i]["phone"]
+						let toNumber = result.spots[i]["phone"]
 						const client = new Twilio(twilio_sid, twilio_token);
 							const options = {
 								to: `+ ${toNumber}`,

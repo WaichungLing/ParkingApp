@@ -93,10 +93,6 @@ router.route("/users/verify/:phone/:password").get(function (req, res){
 });
 
 router.route("/users/create").post(function (req, res){
-	// console.log("Name: " + req.body.name);
-	// console.log("Email: " + req.body.email);
-	// console.log("Phone #: " + req.body.phone);
-
 	if (!req.body.name || !req.body.email || !req.body.phone || !req.body.password){
 		res.status(400);
 		res.send("Error: user needs all fields.\n");
@@ -201,9 +197,11 @@ router.route("/users/:phone").delete(function (req, res){
 
 
 
+
+
 router.route("/apts").get(function (req, res){
 	let db_connection = dbo.getDb("ParkingApp");
-	console.log("getting all users");
+	// console.log("getting all users");
 	db_connection
 		.collection("Apts")
 		.find({}).toArray(function (err, result){
@@ -217,7 +215,7 @@ router.route("/apts").get(function (req, res){
 
 router.route("/apts/:join_code").get(function (req, res){
 	let join_code = parseInt(req.params.join_code);
-	console.log(join_code);
+	// console.log(join_code);
 	let query = {join_code: join_code};
 	let db_connection = dbo.getDb("ParkingApp");
 	db_connection
@@ -227,13 +225,19 @@ router.route("/apts/:join_code").get(function (req, res){
 				res.status(500);
 				res.send(err.message);
 			}
-			console.log(result);
-			res.json(result);
+			// console.log(result);
+			if (result == null){
+				res.status(404);
+				res.send("Error: apartment not found.\n");
+			}
+			else {
+				res.json(result);
+			}
 		});
 });
 
 router.route("/apts/create").post(function (req, res){
-	if (!req.body.join_code || !req.body.num_lanes || !req.body.spots){
+	if (!req.body.join_code || !req.body.num_lanes || !req.body.num_spots){
 		res.status(400);
 		res.send("Error: apartment needs all fields.\n");
 	}	
@@ -270,6 +274,63 @@ router.route("/apts/create").post(function (req, res){
 		});
 
 	
+});
+
+router.route("/apts/update/:joincode").post(function (req, res){
+	if (!req.body.join_code || !req.body.num_lanes || !req.body.num_spots || !req.body.residents || !req.body.spots){
+		res.status(400);
+		res.send("Error: apartment needs all fields.\n");
+	}	
+
+	let query = { join_code: req.params.joincode};
+	let updateuser = {
+		$set: {
+			join_code: req.body.join_code,
+			num_lanes: req.body.num_lanes,
+			num_spots: req.body.num_spots,
+			residents: req.body.residents,		// passed as JSON array
+			spots: req.body.spots,				// passed as JSON array
+		},
+	};
+	let db_connection = dbo.getDb("ParkingApp");
+	db_connection
+		.collection("Apts")
+		.updateOne(query, updateuser, function (err, result){
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
+			res.json(result);
+		});
+});
+
+router.route("/apts/:id").post(function (req, res){	// update
+	if (!req.body.join_code || !req.body.num_lanes || !req.body.num_spots || !req.body.residents || !req.body.spots){
+		res.status(400);
+		res.send("Error: apartment needs all fields.\n");
+	}	
+	
+	let id = req.params.id;
+	let query = { _id: ObjectId(id)};
+	let updateuser = {
+		$set: {
+			join_code: req.body.join_code,
+			num_lanes: req.body.num_lanes,
+			num_spots: req.body.num_spots,
+			residents: req.body.residents,		// passed as JSON array
+			spots: req.body.spots,				// passed as JSON array
+		},
+	};
+	let db_connection = dbo.getDb("ParkingApp");
+	db_connection
+		.collection("Apts")
+		.updateOne(query, updateuser, function (err, result){
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
+			res.json(result);
+		});
 });
 
 router.route("/apts/:id/sendNotifs").get(function (req, res){
@@ -340,30 +401,6 @@ router.route("/apts/:aptid/updateSpots").post(function (req, res){
 				if (errr) throw errr;
 				res.json(resu);
 			});
-		});
-});
-
-router.route("/apts/:id").post(function (req, res){	// update
-	let id = req.params.id;
-	let query = { _id: ObjectId(id)};
-	let updateuser = {
-		$set: {
-			apt_id: req.body.apt_id,
-			num_lanes: req.body.num_lanes,
-			num_spots: req.body.num_spots,
-			residents: req.body.residents,		// passed as JSON array
-			spots: req.body.spots,				// passed as JSON array
-		},
-	};
-	let db_connection = dbo.getDb("ParkingApp");
-	db_connection
-		.collection("Apts")
-		.updateOne(query, updateuser, function (err, result){
-			if (err){
-				res.status(500);
-				res.send(err.message);
-			}
-			res.json(result);
 		});
 });
 

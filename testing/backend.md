@@ -31,7 +31,7 @@ Status: `404 Not Found`
 Response:
 `Error: user does not exist.`
 
-For a new user, they will use the create endpoint. The frontend login page has the user's information, which they pass to the backend via a POST method call.  
+For a new user, they will use the *create* endpoint. The frontend login page has the user's information, which they pass to the backend via a POST method call.  
 **Input:**  
 POST request to route http://localhost:4000/users/create
 Header:
@@ -176,13 +176,82 @@ If the apartment is missing a field (joincode, lanes, etc.):
 Status: `400 Bad Request`
 Response:
 `Error: apartment needs all fields.`
-If the user already exists:
+If the apartment already exists:
 Status: `500 Internal Server Error`
 Response:
 `E11000 duplicate key error`
 
-MORE STUFF ON JOINING APARTMENT AND NOTIFS HERE
- 
+When a user joins an apartment, the frontend needs to accomplish two tasks: to get the apartment object from the joincode, and to add the user into the apartment. 
+On the backend side, these actions are served by a GET request and a POST update request.  
+**Input:**  
+GET request to route http://localhost:4000/apts/1234 where *1234* is the apartment join code.  
+**Output:**  
+Success:
+Status: `200 OK`
+Response:
+`{
+    "_id": "619c512ddcd5baaf87a5010b",
+    "join_code": 1234,
+    "residents": [
+        "619c1e9add6689284956cb2e"
+    ],
+    "num_lanes": 1,
+    "num_spots": 3,
+    "spots": [
+        [],
+        [],
+        []
+    ]
+}`  
+Failure:  
+Status: `404 Not Found`
+Response:
+`Error: apartment not found.`  
+
+**Input:**  
+POST request to route http://localhost:4000/apts/update/1234 where *1234* is the apartment join code. 
+ Header:
+`Content-Type: application/json`   
+Body:
+`{
+    "_id": "619c512ddcd5baaf87a5010b",
+    "join_code": 1234,
+    "residents": [
+        "619c1e9add6689284956cb2e", "6192ff6abab0402fee0ced87"
+    ],
+    "num_lanes": 1,
+    "num_spots": 3,
+    "spots": [
+        [],
+        [],
+        ["phone": "11234567890",
+        "movetime": "December 17, 1995 03:24:00"]
+    ]
+}`  
+**Output:**  
+Success:
+Status: `200 OK`
+Response:
+`{
+    "acknowledged": true,
+    "modifiedCount": 1,
+    "upsertedId": null,
+    "upsertedCount": 0,
+    "matchedCount": 1
+}`  
+Failure:
+If the apartment is missing a field (joincode, spots, etc.):
+Status: `400 Bad Request`
+Response:
+`Error: apartment needs all fields.`
+If apartment not found:
+Status: `404 Not Found`
+Response:
+`Error: apartment does not exist.`
+Any other errors should return with a status `500 Internal Server Error` and the appropriate error message in the response.  
+
+MORE STUFF ON NOTIFICATIONS HERE
+
 Lastly, an apartment can be removed from the database.  
 **Input:**  
 DELETE request to route http://localhost:4000/apts/1234 where *1234* is the apartment join code.  

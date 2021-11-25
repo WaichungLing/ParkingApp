@@ -6,6 +6,11 @@ let Spot = require("../models/spot.model");
 const dbo = require("../db/conn");
 const ObjectId = require("mongodb").ObjectId;	
 const Twilio = require('twilio');		// convert id from String to ObjectID
+
+// const twilio_sid = process.env.TWILIO_SID;
+// const twilio_token = process.env.TWILIO_AUTHTOKEN;
+// const twilio_phone_number = process.env.TWILIO_PHONE_NUMBER;
+
 const twilio_sid = "ACeaac78e0d7959ea014354d2bd33e9ddc";
 const twilio_token = "061f6fe58b8f158038e84e84613ebf60";
 const twilio_phone_number = 14086660152;
@@ -125,7 +130,7 @@ router.route("/users/create").post(function (req, res){
 });
 
 router.route("/users/update/:phone").post(function (req, res){	// update
-	if (!req.body.name || !req.body.email || !req.body.password){
+	if (!req.body.name || !req.body.email || !req.body.password || !req.body.phone){
 		res.status(400);
 		res.send("Error: updated user needs name, email, and phone number.\n");
 	}
@@ -138,7 +143,7 @@ router.route("/users/update/:phone").post(function (req, res){	// update
 					email: req.body.email,
 					phone: phone,
 					password: req.body.password,
-				},
+				},	
 		};
 		let db_connection = dbo.getDb("ParkingApp");
 		db_connection
@@ -228,10 +233,10 @@ router.route("/apts/:join_code").get(function (req, res){
 });
 
 router.route("/apts/create").post(function (req, res){
-	// console.log(req.body.join_code);
-	// console.log(req.body.num_lanes);
-	// console.log(req.body.num_spots);
-	// console.log(req.body.residents);
+	if (!req.body.join_code || !req.body.num_lanes || !req.body.spots){
+		res.status(400);
+		res.send("Error: apartment needs all fields.\n");
+	}	
 
 	var residents = []
 	for (let i = 0; i < req.body.residents.length; i++) {
@@ -252,8 +257,6 @@ router.route("/apts/create").post(function (req, res){
 		residents: residents,		// passed as JSON array
 		spots: spots,				// passed as JSON array
 	});
-	
-	// res.json(newapt);
 	
 	let db_connection = dbo.getDb("ParkingApp");		// might move this to separate function to share one instance
 	db_connection

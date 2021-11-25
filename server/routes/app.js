@@ -229,25 +229,38 @@ router.route("/apts/:join_code").get(function (req, res){
 });
 
 router.route("/apts/create").post(function (req, res){
-	if (!req.body.join_code || !req.body.num_lanes || !req.body.num_spots){
+	if (!req.body.join_code || !req.body.num_lanes || !req.body.num_spots || !req.body.phone || !req.body.streetcleaning){
 		res.status(400);
 		res.send("Error: apartment needs all fields.\n");
 	}
 
-	let residents = []
+	let residents = [];
 	residents.push(req.body.phone);
 	
-	let spots = []
+	let spots = [];
 	for (let i = 0; i < req.body.num_lanes; i++) {
 		for (let j = 0; j < req.body.num_spots; j++) {
 			spots.push({});
 		}
 	}
 	
-	/** TODO **/
-	// handle move time
-	const testDate = new Date('December 17, 1995 03:24:00');
-	/** TODO **/
+	let movetimes = [];
+	let moveday = req.body.streetcleaning.day;
+	let movehour = req.body.streetcleaning.hour;
+	// console.log(moveday);
+	// console.log(movehour);
+	let baseDate = new Date(2021, 11, 28);		// Sunday at 0 hours
+	const hour_ms = 3600000;
+	const day_ms = 86400000;
+	const week_ms = 604800000;
+	if (moveday != 0){
+		for (let i=0;i<100;i++){					// change to however many
+			let holdDate = new Date(baseDate.getTime() + (moveday-1)*day_ms + movehour*hour_ms + i*week_ms);
+			movetimes.push(holdDate);
+		}
+		// console.log(movetimes);
+	}
+	
 
 	let newapt = new Apt({
 		join_code: req.body.join_code,
@@ -255,7 +268,7 @@ router.route("/apts/create").post(function (req, res){
 		num_spots: req.body.num_spots,
 		residents: residents,		// passed as JSON array
 		spots: spots,				// passed as JSON array
-		move_time: testDate,		// TODO
+		street_movetime: movetimes
 	});
 	
 	let db_connection = dbo.getDb("ParkingApp");		// might move this to separate function to share one instance
@@ -272,13 +285,13 @@ router.route("/apts/create").post(function (req, res){
 	
 });
 
-router.route("/apts/update/:joincode").post(function (req, res){
+router.route("/apts/:joincode").post(function (req, res){
 	if (!req.body.join_code || !req.body.num_lanes || !req.body.num_spots || !req.body.residents || !req.body.spots){
 		res.status(400);
 		res.send("Error: apartment needs all fields.\n");
 	}
 
-	let query = { join_code: req.params.joincode};
+	let query = { join_code: parseInt(req.params.joincode)};
 	let updateuser = {
 		$set: {
 			join_code: req.body.join_code,
@@ -300,7 +313,7 @@ router.route("/apts/update/:joincode").post(function (req, res){
 		});
 });
 
-router.route("/apts/:id").post(function (req, res){	// update
+router.route("/apts/update/:id").post(function (req, res){	// update
 	if (!req.body.join_code || !req.body.num_lanes || !req.body.num_spots || !req.body.residents || !req.body.spots){
 		res.status(400);
 		res.send("Error: apartment needs all fields.\n");
@@ -448,12 +461,27 @@ router.route("/apts/:aptid/:spotid/updateSpot").post(function (req, res){
 });
 
 
-router.route("/apts/:id").delete(function (req, res){
+router.route("/apts/:joincode").delete(function (req, res){
+	let jc = parseInt(req.params.joincode);
+	let query = { join_code: jc};
+	let db_connection = dbo.getDb("ParkingApp");
+	db_connection
+		.collection("Apts")
+		.deleteOne(query, function (err, result){
+			if (err){
+				res.status(500);
+				res.send(err.message);
+			}
+			res.json(result);
+		});
+});
+
+router.route("/apts/id/:id").delete(function (req, res){
 	let id = req.params.id;
 	let query = { _id: ObjectId(id)};
 	let db_connection = dbo.getDb("ParkingApp");
 	db_connection
-		.collection("Users")
+		.collection("Apts")
 		.deleteOne(query, function (err, result){
 			if (err){
 				res.status(500);

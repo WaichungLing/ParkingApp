@@ -17,52 +17,84 @@ const apt_schema = new Schema({
     num_lanes: { type: Number, required: true},
     num_spots: { type: Number, required: true},
     spots: {type: mongoose.Mixed, required: true},
-    movetimes: {type: Date, required: true}						// for street-clean notifcations
+    street_movetime: [{type: Date, required: true}]						// for street-clean notifcations
 });
 
-const testDate = new Date('December 17, 1995 03:24:00');		// some arbitrary time
-//const testNumber = 15105168560;									// this is my number dont call me
-const testName = "Victor";										// switch to Apartment.user.name for each user
-
-
+apt_schema.index({join_code: 1}, {unique: true});
 
 apt_schema.methods.sendNotifications = function(callback){
 	const nowDate = new Date();
-  console.log(nowDate)
-  for (let i = 0; i < this.spots.length; i++) {
-    if (this.spots[i]["movetime"] && this.spots[i]["phone"]) {
-      let spotDate = new Date(this.spots[i]["movetime"])
-      console.log(spotDate)
-      console.log(new Date(spotDate.getTime() - 30*60000))
-      if (nowDate >= spotDate - 30*60000 && nowDate <= spotDate - 29*60000) {
-        console.log("got a need to move time for spot in pos " + i);
-        let toNumber = this.spots[i]["phone"]
-        const client = new Twilio(twilio_sid, twilio_token);
-          const options = {
-            to: `+ ${toNumber}`,
-            from: `+ ${twilio_phone_number}`,
-            /* eslint-disable max-len */
-            body: `Time to move your car! Make sure it is moved by ${spotDate.getHours()}:${spotDate.getMinutes()}`,
-            /* eslint-enable max-len */
-          };
-          client.messages.create(options, function(err, response) {
-            if (err) {
-              console.error(err);
-            }
-            else {
-              console.log(`Message sent to: ${toNumber}`);
-            }
-          });
-        }
-      }
-    }
-  if (callback){
-    callback.call();
-  }
+	// console.log(nowDate)
+	const min_ms = 60000;
+	for (let i=0; i<this.street_movetime.length;i++){
+		let holdTime = this.street_movetime[i];
+		let holdDate = new Date(holdTime);
+		if (nowDate >= holdDate - 30*min_ms && nowDate <= holdDate - 29*min_ms) {			// 30 mins beforehand
+			console.log("street cleaning soon at " + holdDate);
+			for (let j=0;j<this.residents.length;j++){
+				let toNumber = this.residents[i];
+				// console.log(toNumber);
+				const client = new Twilio(twilio_sid, twilio_token);
+				const options = {
+					to: `+ ${toNumber}`,
+					from: `+ ${twilio_phone_number}`,
+					/* eslint-disable max-len */
+					body: `Street cleaning is soon! Make sure to move your car by ${holdDate}!`,
+					/* eslint-enable max-len */
+				};
+				client.messages.create(options, function(err, response) {
+					if (err) {
+						console.error(err);
+					}
+					else {
+						console.log(`Message sent to: ${toNumber}`);
+					}
+				});
+			}
+		}
+	}
+	for (let i = 0; i < this.spots.length; i++) {
+		if (this.spots[i]["movetime"] && this.spots[i]["phone"]) {
+			let spotDate = new Date(this.spots[i]["movetime"])
+			// console.log(spotDate)
+			// console.log(new Date(spotDate.getTime() - 30*60000))
+			if (nowDate >= spotDate - 30*min_ms && nowDate <= spotDate - 29*min_ms) {			// 30 mins beforehand
+				console.log("got a need to move time for spot in pos " + i + " at " + nowDate);
+				let toNumber = this.spots[i]["phone"];
+				// console.log(toNumber);
+				const client = new Twilio(twilio_sid, twilio_token);
+				const options = {
+					to: `+ ${toNumber}`,
+					from: `+ ${twilio_phone_number}`,
+					/* eslint-disable max-len */
+					body: `Time to move your car! Make sure it is moved by ${spotDate}!`,
+					/* eslint-enable max-len */
+				};
+				client.messages.create(options, function(err, response) {
+					if (err) {
+						console.error(err);
+					}
+					else {
+						console.log(`Message sent to: ${toNumber}`);
+					}
+				});
+			}
+		}
+	}
+	if (callback){
+		callback.call();
+	}
 }
+
 const Apt = mongoose.model('Apt', apt_schema);
 
 module.exports = Apt;
+
+
+
+
+
+
 	// if (nowDate >= testDate){									// always true for testing rn
 	// 	const client = new Twilio(twilio_sid, twilio_token);
 	// 	const options = {

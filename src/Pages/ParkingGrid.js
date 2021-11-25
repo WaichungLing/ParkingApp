@@ -9,7 +9,6 @@ import Draggable from 'react-draggable';
 import {Button, Typography, ButtonGroup} from "@mui/material";
 import {useLocation, useParams} from "react-router-dom";
 import axios from 'axios';
-import async from "async";
 
 const theme = createTheme({
   palette: {
@@ -46,6 +45,10 @@ const styles = {
   singleLot: {
     textAlign: 'center',
   },
+  occupiedSingleLot:{
+    backgroundImage: `url(${Lambo})`,
+    backgroundSize: 'cover',
+  },
   car:{
     backgroundImage: `url(${Lambo})`,
   },
@@ -71,32 +74,32 @@ export default function ParkingGrid(props) {
   const [m, setM] = useState(2)
 
   // Scalable view
-  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
   const [parkingLotDimensions, setParkingLotDimensions] = useState({});
   const [singleGridDimensions, setSingleGridDimensions] = useState({});
   
   const [clickedID, setClickedID] = useState(-1);
   const [carParked, setCarParked] = useState(-1);   // This is for when you already park your car
+  const [rearrange, setRearrange] = useState(false);
   const [sentStatus, setSentStatus] = useState(false);
   const [sent, setSent] = useState(false);
   const ref = useRef(null);
   const ref2 = useRef(null);
 
   // When window size changed
-  useEffect(() => {
-    function handleResize() {
-      setWindowDimensions(getWindowDimensions());
-      setParkingLotDimensions({wd: ref.current.clientWidth, ht: ref.current.offsetHeight});
-      setSingleGridDimensions({wd: ref.current.offsetWidth});
-    }
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // useEffect(() => {
+  //   function handleResize() {
+  //     setWindowDimensions(getWindowDimensions());
+  //     setParkingLotDimensions({wd: ref.current.clientWidth, ht: ref.current.offsetHeight});
+  //     setSingleGridDimensions({wd: ref.current.offsetWidth});
+  //   }
+  //   window.addEventListener('resize', handleResize);
+  //   return () => window.removeEventListener('resize', handleResize);
+  // }, []);
 
   // When initialize
   useEffect(() => {
-    setParkingLotDimensions({wd: ref.current.clientWidth, ht: ref.current.offsetHeight});
-    setSingleGridDimensions({wd: ref.current.offsetWidth});
+    // setParkingLotDimensions({wd: ref.current.clientWidth, ht: ref.current.offsetHeight});
+    // setSingleGridDimensions({wd: ref.current.offsetWidth});
     
     console.log(params);
     console.log(url);
@@ -114,19 +117,6 @@ export default function ParkingGrid(props) {
       }).catch((err)=>{
         console.log(err);
     })
-    
-    /** TODO **/
-    // 1. getApartment by params.apartmentID, if null, render "Apartment Not exist" and a link to create apartment
-    // 2. if apartmentID not null, update n,m, users, spots
-    // 3. Check the current user has parked in this apartment or not, update ${carParked}
-    /** TODO **/
-    let id = -1; // should be just carPark, for static testing only, remove when link backend, should loop
-    // Once return carParked, setCarParked and updated parkedID to set steps
-    if (id >= 0){
-      steps.x = id % n;
-      steps.y = m - Math.floor(id / n);
-    }
-
   }, []);
   
   function handleClickItem(e,index){
@@ -158,6 +148,22 @@ export default function ParkingGrid(props) {
         }, 10000);
       });
   }
+  
+  function handleRearrange(e){
+    setRearrange(true);
+    let id = -1;
+    for (let i = 0; i < userArray; i++){
+      if (Object.keys(userArray[i]).length !== 0){
+        if (userArray[i].phone === phone){
+          setCarParked(i);
+          steps.x = id % n;
+          steps.y = m - Math.floor(id / n);
+          break;
+        }
+      }
+    }
+    setSingleGridDimensions({wd: ref.current.offsetWidth, ht: ref.current.offsetHeight});
+  }
 
   function handleDrag(e, data){
     // console.log(data);
@@ -170,12 +176,26 @@ export default function ParkingGrid(props) {
     }else{
       steps.x++;
     }
-    // console.log(steps);
-    let id = (m-steps.y)*n+steps.x;
     console.log((m-steps.y)*n+steps.x);
-    userArray[id] = phone;
-    setUserArray([...userArray]);
   }
+  
+  function handleSave(e){
+    let id = (m-steps.y)*n+steps.x;
+    console.log("Final position ", id);
+    if (Object.keys(userArray[id]).length === 0){
+      userArray[id] = {phone:phone};
+      userArray[carParked] = {};
+      console.log(userArray);
+      setUserArray([...userArray]);
+      setCarParked(id);
+    }
+    setRearrange(false)
+  }
+  
+  let sz = 12.0/n;
+  let ht = Math.floor(40/m)
+  let htvh = `${ht}vh`
+  let htLabel = htvh.toString()
 
   return (
     <ThemeProvider theme={theme}>
@@ -206,52 +226,48 @@ export default function ParkingGrid(props) {
                 spacing={0}
                 ref={ref2}
           >
-            {Array.from(Array(n*m)).map((_, index) => {
-              let sz = 12.0/n;
-              let ht = 1.5 * parkingLotDimensions.wd;
-
-              if (carParked === index){
+            {userArray.map((_, index) => {
+              if (carParked === index && rearrange === true){
+                console.log("haha");
                 return (
                   <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
-                    <Item style={{...styles.singleLot, height: ht}}>
+                    
+                    <Item style={{...styles.singleLot, height: htLabel}}>
                         <Draggable
-                          grid={[singleGridDimensions.wd - 1/2,
-                            1.5*(singleGridDimensions.wd - 1/2)]}
+                          grid={[singleGridDimensions.wd, singleGridDimensions.ht]}
                           onDrag={handleDrag}
                         >
-                          <img draggable="false" src={Lambo} style={{height: 1.5*parkingLotDimensions.wd,
-                            width: parkingLotDimensions.wd}}>
-                          </img>
+                          <div style={{...styles.occupiedSingleLot, height: htLabel}}></div>
                         </Draggable>
                     </Item>
                   </Grid>
                 );
-              }else if ( index !== clickedID) {
+              }else if (carParked === index && rearrange === false){
                 return (
                   <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
-                    <Item style={{...styles.singleLot, height: ht}}>
-                      <img draggable="false" src={Lambo} style={{
-                        height: 1.5 * parkingLotDimensions.wd,
-                        width: parkingLotDimensions.wd
-                      }} onClick={e => handleClickItem(e, index)}>
-                      </img>
-                    </Item>
+                    <Item style={{...styles.occupiedSingleLot, height: htLabel}}/>
                   </Grid>
                 );
-              }else if ( index === clickedID){
+              }else if (Object.keys(userArray[index]).length !== 0 && index !== clickedID) {
+                return (
+                  <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
+                    <Item style={{...styles.occupiedSingleLot, height: htLabel}} onClick={e => handleClickItem(e, index)}/>
+                  </Grid>
+                );
+              }else if ( Object.keys(userArray[index]).length !== 0 && index === clickedID){
                 if (sent === false){
                   return (
                     <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
-                      <Item style={{...styles.singleLot, height: ht, display:'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center'}}>
-                        <Button variant="outlined" style={{width:0.8*parkingLotDimensions.wd}} onClick={e => handleAskMove(e)}>Ask a move</Button>
-                        <Button variant="outlined" style={{width:0.8*parkingLotDimensions.wd}} onClick={e => handleClickItemCancel(e)}>Cancel</Button>
+                      <Item style={{...styles.singleLot, height: htLabel, display:'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center'}}>
+                        <Button variant="outlined" style={{width:'80%'}} onClick={e => handleAskMove(e)}>Ask a move</Button>
+                        <Button variant="outlined" style={{width:'80%'}} onClick={e => handleClickItemCancel(e)}>Cancel</Button>
                       </Item>
                     </Grid>
                   );
                 }else{
                   return (
                     <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
-                      <Item style={{...styles.singleLot, height: ht, display:'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center'}}>
+                      <Item style={{...styles.singleLot, height: htLabel, display:'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center'}}>
                         {sentStatus?
                           <Typography style={{color: '#60A166', fontWeight: 800}}>Notification sent successfully!</Typography>
                           :
@@ -261,11 +277,10 @@ export default function ParkingGrid(props) {
                     </Grid>
                   );
                 }
-                
               }else{
                 return (
                   <Grid item xs={sz} key={index} style={{border: "1px solid grey"}} ref={ref}>
-                    <Item style={{...styles.singleLot, height: ht}}>
+                    <Item style={{...styles.singleLot, height: htLabel}}>
                       <Typography>{index}</Typography>
                     </Item>
                   </Grid>
@@ -273,26 +288,27 @@ export default function ParkingGrid(props) {
               }
             })}
           </Grid>
-          {carParked < 0?
+          {rearrange === true?
             <div style={{display: 'flex', flexDirection: 'column'}}>
-              <Draggable
-                positionOffset={{x:1,y:1}}
-                grid={[singleGridDimensions.wd - 1/2,
-                  1.5*(singleGridDimensions.wd - 1/2)]}
-                onDrag={handleDrag}
-              >
-                <img draggable="false" src={Lambo} style={{height: 1.5*parkingLotDimensions.wd,
-                  width: parkingLotDimensions.wd}}>
-                </img>
-              </Draggable>
-              <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
-                <Button variant='contained' style={{marginBottom: 20}}>SAVE</Button>
+              {
+                carParked === -1?
+                  <Draggable
+                    positionOffset={{x:1,y:1}}
+                    grid={[singleGridDimensions.wd, singleGridDimensions.ht]}
+                    onDrag={handleDrag}
+                  >
+                  <img draggable="false" src={Lambo} style={{height: singleGridDimensions.ht,
+                    width: singleGridDimensions.wd}}>
+                  </img>
+                </Draggable>:null
+              }
+              <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', margin:'5vh'}}>
+                <Button variant='contained' onClick={e=>handleSave(e)}>Save</Button>
               </div>
-              
             </div>
             :
             <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', margin:'5vh'}}>
-              <Button variant='contained'>SAVE</Button>
+              <Button variant='contained' style={{marginBottom: 20}} onClick={e=>handleRearrange(e)}>Rearrange</Button>
             </div>
           }
         </Box>

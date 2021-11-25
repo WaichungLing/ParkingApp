@@ -191,10 +191,6 @@ router.route("/users/:phone").delete(function (req, res){
 		});
 });
 
-
-
-
-
 router.route("/apts").get(function (req, res){
 	let db_connection = dbo.getDb("ParkingApp");
 	// console.log("getting all users");

@@ -207,7 +207,7 @@ router.route("/apts").get(function (req, res){
 
 router.route("/apts/:join_code").get(function (req, res){
 	let join_code = parseInt(req.params.join_code);
-	// console.log(join_code);
+	console.log(join_code);
 	let query = {join_code: join_code};
 	let db_connection = dbo.getDb("ParkingApp");
 	db_connection
@@ -217,7 +217,7 @@ router.route("/apts/:join_code").get(function (req, res){
 				res.status(500);
 				res.send(err.message);
 			}
-			// console.log(result);
+			console.log(result);
 			if (result == null){
 				res.status(404);
 				res.send("Error: apartment not found.\n");
@@ -245,11 +245,11 @@ router.route("/apts/create").post(function (req, res){
 	}
 	
 	let movetimes = [];
-	let moveday = req.body.streetcleaning.day;
-	let movehour = req.body.streetcleaning.hour;
+	let moveday = parseInt(req.body.streetcleaning.day);
+	let movehour = parseInt(req.body.streetcleaning.hour);
 	// console.log(moveday);
 	// console.log(movehour);
-	let baseDate = new Date(2021, 11, 28);		// Sunday at 0 hours
+	let baseDate = new Date(2021,10,28,0,0);		// Sunday at 0 hours
 	const hour_ms = 3600000;
 	const day_ms = 86400000;
 	const week_ms = 604800000;
@@ -258,7 +258,6 @@ router.route("/apts/create").post(function (req, res){
 			let holdDate = new Date(baseDate.getTime() + (moveday-1)*day_ms + movehour*hour_ms + i*week_ms);
 			movetimes.push(holdDate);
 		}
-		// console.log(movetimes);
 	}
 	
 
@@ -285,19 +284,16 @@ router.route("/apts/create").post(function (req, res){
 	
 });
 
+// I use this API to pass the complete spots array back
 router.route("/apts/:joincode").post(function (req, res){
-	if (!req.body.join_code || !req.body.num_lanes || !req.body.num_spots || !req.body.residents || !req.body.spots){
+	if (!req.body.spots){
 		res.status(400);
-		res.send("Error: apartment needs all fields.\n");
+		res.send("Error: No spots array attached.\n");
 	}
 
 	let query = { join_code: parseInt(req.params.joincode)};
 	let updateuser = {
 		$set: {
-			join_code: req.body.join_code,
-			num_lanes: req.body.num_lanes,
-			num_spots: req.body.num_spots,
-			residents: req.body.residents,		// passed as JSON array
 			spots: req.body.spots,				// passed as JSON array
 		},
 	};

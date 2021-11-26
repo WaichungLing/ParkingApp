@@ -65,25 +65,10 @@ function Notification() {
   };
 
   function handleClick(event){
-    /** TODO **/
-    // Add toNum format checking
-    /** TODO **/
     event.preventDefault();
-    
     let mm = parseInt(minute)*5;
     let dd = dayString[day];
     
-    // fetch(`http://localhost:4000/api/send-sms?recipient=${toNum}`)
-    //   .then(res => res.json())
-    //   .then(data => {
-    //     if (data.success) {
-    //       setSent(true);
-    //       setSentStatus(true);
-    //     } else {
-    //       setSent(true);
-    //       setSentStatus(false);
-    //     }
-    //   });
   }
   
   return (

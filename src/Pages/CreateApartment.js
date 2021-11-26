@@ -63,13 +63,11 @@ export default function CreateApartment(){
 
   function handleNumberOfTandem(e) {
     let s = e.target.value;
-    console.log(s.replace(/[^0-9]/g, ''))
     setNumberOfTandem(s.replace(/[^0-9]/g, ''));
   }
 
   function handleNumberPerTandem(e) {
     let s = e.target.value;
-    console.log(s.replace(/[^0-9]/g, ''))
     setNumberPerTandem(s.replace(/[^0-9]/g, ''));
   }
 
@@ -93,14 +91,12 @@ export default function CreateApartment(){
       console.log("Trying join_code: ", JoinCode);
       await axios.get(`http://localhost:4000/apts/${JoinCode}`)
         .then((res)=>{
-          if (res.data == null){
-            console.log("done")
-            found = true;
-          }
         })
         .catch(err => {
+          found = true;
           console.log(err)
         })
+      i = i+1;
     }
     if (found){
       axios.post("http://localhost:4000/apts/create", {
@@ -108,6 +104,10 @@ export default function CreateApartment(){
         num_lanes: parseInt(NumberPerTandem),
         num_spots: parseInt(NumberOfTandem),
         phone: phone,
+        streetcleaning:{
+          day: day,
+          hour: time,
+        }
       }).then(()=>{
         apartments.push(JoinCode);
         axios.post(`http://localhost:4000/users/updateApt/${phone}`,{

@@ -99,6 +99,13 @@ export default function ParkingGrid(props) {
         setN(res.data.num_spots);
         setM(res.data.num_lanes);
         setUserArray(res.data.spots);
+        for (let i = 0; i < res.data.spots.length; i++){
+          if (Object.keys(res.data.spots[i]).length !== 0 && res.data.spots[i].phone === url.state.phone){
+                console.log("matched",i)
+                setCarParked(i);
+                break;
+          }
+        }
         console.log(userArray);
       }).catch((err)=>{
         console.log(err);
@@ -137,13 +144,12 @@ export default function ParkingGrid(props) {
   
   function handleRearrange(e){
     setRearrange(true);
-    let id = -1;
-    for (let i = 0; i < userArray; i++){
+    for (let i = 0; i < userArray.length; i++){
       if (Object.keys(userArray[i]).length !== 0){
         if (userArray[i].phone === phone){
           setCarParked(i);
-          steps.x = id % n;
-          steps.y = m - Math.floor(id / n);
+          steps.x = i % n;
+          steps.y = m - Math.floor(i / n);
           break;
         }
       }

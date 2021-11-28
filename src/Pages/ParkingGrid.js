@@ -121,7 +121,8 @@ export default function ParkingGrid(props) {
   }
   
   function handleAskMove(e){
-    let to = userArray[clickedID];
+    let to = userArray[clickedID].phone;
+    console.log(to)
     fetch(`http://localhost:4000/api/send-sms?recipient=${to}`)
       .then(res => res.json())
       .then(data => {
@@ -138,7 +139,7 @@ export default function ParkingGrid(props) {
         setTimeout(function (){
           setSent(false);
           setSentStatus(false);
-        }, 10000);
+        }, 600000);
       });
   }
   
@@ -173,7 +174,23 @@ export default function ParkingGrid(props) {
   function handleSave(e){
     let id = (m-steps.y)*n+steps.x;
     console.log("Final position ", id);
-    // Nothing in that index
+    // Did nothing
+    if (id === -1 || carParked === id){
+      return;
+    }
+    // If the previous id is inner, need to clear the old clean time for what it's behind
+    if (carParked >= 0 && carParked < n*(m-1)) {
+      let id_temp = carParked+n;
+      while (id_temp < n*m){
+        if (Object.keys(userArray[id_temp]).length === 0){
+          // do nothing
+        }else{
+          userArray[id_temp].movetime = '';
+        }
+        id_temp = id_temp + n;
+      }
+    }
+    // Nothing in the new index
     if (Object.keys(userArray[id]).length === 0){
       userArray[id] = {phone:phone, movetime:''};
       if (carParked !== -1 && carParked !== id){

@@ -234,8 +234,8 @@ router.route("/apts/create").post(function (req, res){
 		res.send("Error: apartment needs all fields.\n");
 	}
 
-	let residents = [];
-	residents.push(req.body.phone);
+	// let residents = [];
+	// residents.push(req.body.phone);
 	
 	let spots = [];
 	for (let i = 0; i < req.body.num_lanes; i++) {
@@ -265,7 +265,7 @@ router.route("/apts/create").post(function (req, res){
 		join_code: req.body.join_code,
 		num_lanes: req.body.num_lanes,
 		num_spots: req.body.num_spots,
-		residents: residents,		// passed as JSON array
+		//residents: residents,		// passed as JSON array
 		spots: spots,				// passed as JSON array
 		street_movetime: movetimes
 	});
@@ -489,7 +489,7 @@ router.route('/api/send-sms').get(function(req, res){
 	const {recipient} = req.query;
 	client.messages.create({
 		body: "Hi! Looks like your car has blocked others way, please go and check!",
-		to: recipient,
+		to: `+${recipient}`,
 		from: twilio_phone_number,
 	}).then(() => {
 		res.send(JSON.stringify({ success: true }));

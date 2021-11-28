@@ -9,11 +9,11 @@ const notificationWorkerFactory = function() {
             .collection("Apts")
             .find({}).toArray(function (err, result){
                 if (err){
-                    res.status(500);
-                    res.send(err.message);
+                    result.status(500);
+                    result.send(err.message);
                 }
                 for (let i = 0; i < result.length; i++) {
-                    console.log(result[i]);
+                    //console.log(result[i]);
                     Apartment(result[i]).sendNotifications();
                 }
             });

@@ -36,8 +36,8 @@ apt_schema.methods.sendNotifications = function(callback){
 				// console.log(toNumber);
 				const client = new Twilio(twilio_sid, twilio_token);
 				const options = {
-					to: `+ ${toNumber}`,
-					from: `+ ${twilio_phone_number}`,
+					to: `+${toNumber}`,
+					from: `+${twilio_phone_number}`,
 					/* eslint-disable max-len */
 					body: `Street cleaning is soon! Make sure to move your car by ${holdDate}!`,
 					/* eslint-enable max-len */
@@ -64,13 +64,14 @@ apt_schema.methods.sendNotifications = function(callback){
 				// console.log(toNumber);
 				const client = new Twilio(twilio_sid, twilio_token);
 				const options = {
-					to: `+ ${toNumber}`,
-					from: `+ ${twilio_phone_number}`,
+					to: `+${toNumber}`,
+					from: `+${twilio_phone_number}`,
 					/* eslint-disable max-len */
 					body: `Time to move your car! Make sure it is moved by ${spotDate}!`,
 					/* eslint-enable max-len */
 				};
 				client.messages.create(options, function(err, response) {
+					console.log(options)
 					if (err) {
 						console.error(err);
 					}
@@ -114,7 +115,7 @@ module.exports = Apt;
   //       //     }
   //       // });
   //
-  //       
+  //
 	// }
 
 

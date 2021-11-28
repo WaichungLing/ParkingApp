@@ -184,7 +184,7 @@ export default function ParkingGrid(props) {
       setCarParked(id);
     }else{
       // already have something
-      if (userArray[id].phone !== null){
+      if (userArray[id].phone !== ""){
         //
       }else{
         userArray[id].phone = phone;

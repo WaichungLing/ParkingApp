@@ -4,9 +4,6 @@ const Twilio = require('twilio');
 const twilio_sid = process.env.TWILIO_SID;
 const twilio_token = process.env.TWILIO_AUTHTOKEN;
 const twilio_phone_number = process.env.TWILIO_PHONE_NUMBER;
-/*const twilio_sid = "ACeaac78e0d7959ea014354d2bd33e9ddc";
-const twilio_token = "061f6fe58b8f158038e84e84613ebf60";
-const twilio_phone_number = 18506085395;*/
 
 const Schema = mongoose.Schema;
 
@@ -26,30 +23,33 @@ apt_schema.methods.sendNotifications = function(callback){
 	const nowDate = new Date();
 	// console.log(nowDate)
 	const min_ms = 60000;
-	for (let i=0; i<this.street_movetime.length;i++){
-		let holdTime = this.street_movetime[i];
+	for (let j=0; j<this.street_movetime.length;j++){
+		let holdTime = this.street_movetime[j];
 		let holdDate = new Date(holdTime);
 		if (nowDate >= holdDate - 30*min_ms && nowDate <= holdDate - 29*min_ms) {			// 30 mins beforehand
-			console.log("street cleaning soon at " + holdDate);
-			for (let j=0;j<this.residents.length;j++){
-				let toNumber = this.residents[i];
-				// console.log(toNumber);
-				const client = new Twilio(twilio_sid, twilio_token);
-				const options = {
-					to: `+${toNumber}`,
-					from: `+${twilio_phone_number}`,
-					/* eslint-disable max-len */
-					body: `Street cleaning is soon! Make sure to move your car by ${holdDate}!`,
-					/* eslint-enable max-len */
-				};
-				client.messages.create(options, function(err, response) {
-					if (err) {
-						console.error(err);
-					}
-					else {
-						console.log(`Message sent to: ${toNumber}`);
-					}
-				});
+			// console.log("street cleaning soon at " + holdDate);
+			for (let i = 0; i < this.spots.length; i++) {
+				if (this.spots[i]["phone"]) {
+					let toNumber = this.spots[i]["phone"];
+					// console.log(toNumber);
+					const client = new Twilio(twilio_sid, twilio_token);
+					const options = {
+						to: `+${toNumber}`,
+						from: `+${twilio_phone_number}`,
+						/* eslint-disable max-len */
+						body: `Street cleaning is soon! Make sure to move your car by ${holdDate}!`,
+						/* eslint-enable max-len */
+					};
+					client.messages.create(options, function(err, response) {
+						console.log(options)
+						if (err) {
+							console.error(err);
+						}
+						else {
+							console.log(`Message sent to: ${toNumber}`);
+						}
+					});
+				}
 			}
 		}
 	}

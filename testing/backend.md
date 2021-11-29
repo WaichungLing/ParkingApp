@@ -81,6 +81,7 @@ Body:
 Success:  
 Status: `200 OK`
 Response: 
+Note that matchedCount and modifiedCount are one (most importantly, nonzero), indicating the call is to a valid record and that it has been updated, respectively.
 `{
     "acknowledged": true,
     "modifiedCount": 1,
@@ -113,7 +114,7 @@ Body:
 Success:
 Status: `200 OK`
 Response:
-We can check the `matchedCount` and `modifiedCount` to see if the apartments array was found and actually modified.
+Note that matchedCount and modifiedCount are one (most importantly, nonzero), indicating the call is to a valid record and that it has been updated, respectively.
 `{
     "acknowledged": true,
     "modifiedCount": 1,
@@ -160,7 +161,7 @@ Body:
 "join_code": 1234,
 "num_lanes": 1,
 "num_spots": 3,
-"residents": ["619c1e9add6689284956cb2e"]
+"residents": ["15105168560"]
 }`
 **Output:**  
 Success:
@@ -193,7 +194,7 @@ Response:
     "_id": "619c512ddcd5baaf87a5010b",
     "join_code": 1234,
     "residents": [
-        "619c1e9add6689284956cb2e"
+        "15105168560"
     ],
     "num_lanes": 1,
     "num_spots": 3,
@@ -217,7 +218,7 @@ Body:
     "_id": "619c512ddcd5baaf87a5010b",
     "join_code": 1234,
     "residents": [
-        "619c1e9add6689284956cb2e", "6192ff6abab0402fee0ced87"
+        "11234567890", "11234567899"
     ],
     "num_lanes": 1,
     "num_spots": 3,
@@ -232,6 +233,7 @@ Body:
 Success:
 Status: `200 OK`
 Response:
+Note that matchedCount and modifiedCount are one (most importantly, nonzero), indicating the call is to a valid record and that it has been updated, respectively.
 `{
     "acknowledged": true,
     "modifiedCount": 1,
@@ -250,7 +252,50 @@ Response:
 `Error: apartment does not exist.`
 Any other errors should return with a status `500 Internal Server Error` and the appropriate error message in the response.  
 
-MORE STUFF ON NOTIFICATIONS HERE
+To test notifications, we issue a POST call to the database with an apartment that has at least one spot with a valid movetime and user. 
+**Input:**  
+POST request to route http://localhost:4000/apts/update/1234 where *1234* is the apartment join code. 
+ Header:
+`Content-Type: application/json`   
+Body:
+`{
+    "_id": "619c512ddcd5baaf87a5010b",
+    "join_code": 1234,
+    "residents": [
+        "11234567890", "11234567899"
+    ],
+    "num_lanes": 1,
+    "num_spots": 3,
+    "spots": [
+        [],
+        [],
+        ["phone": "11234567890",
+        "movetime": "December 17, 1995 03:24:00"]
+    ]
+}`  
+**Output:**  
+Success:
+Status: `200 OK`
+Response:
+Note that matchedCount and modifiedCount are one (most importantly, nonzero), indicating the call is to a valid record and that it has been updated, respectively.
+`{
+    "acknowledged": true,
+    "modifiedCount": 1,
+    "upsertedId": null,
+    "upsertedCount": 0,
+    "matchedCount": 1
+}`  
+Failure:
+If the apartment is missing a field (joincode, spots, etc.):
+Status: `400 Bad Request`
+Response:
+`Error: apartment needs all fields.`
+If apartment not found:
+Status: `404 Not Found`
+Response:
+`Error: apartment does not exist.`
+Any other errors should return with a status `500 Internal Server Error` and the appropriate error message in the response.  
+Then, the backend will automatically periodically check each apartment record's spots objects' movetimes against the current time, and when appropriate, send an SMS message to the corresponding user with accompanying text. We check these by manually verifying the text in the SMS message when we receive them on our phones.
 
 Lastly, an apartment can be removed from the database.  
 **Input:**  

@@ -30,6 +30,15 @@ Failure:
 Status: `404 Not Found`
 Response:
 `Error: user does not exist.`
+**Postman Script Tests:**  
+pm.test("Status test", function() {
+    pm.response.to.have.status(200);
+});
+pm.test("TestReturnObj", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.name).to.eql("frontend");
+    pm.expect(jsonData.phone).to.eql("11234567890");
+});
 
 For a new user, they will use the *create* endpoint. The frontend login page has the user's information, which they pass to the backend via a POST method call.  
 **Input:**  
@@ -62,7 +71,15 @@ If the user already exists:
 Status: `500 Internal Server Error`
 Response:
 `E11000 duplicate key error collection: ParkingAppDB.Users index: name_1_email_1_phone_1 dup key: { name: "frontend", email: "123@123.com", phone: "11234567890" }`
-  
+**Postman Script Tests:** 
+pm.test("Status test", function() {
+    pm.response.to.have.status(200);
+});
+pm.test("TestReturnObj", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.acknowledged).to.eql(true);
+});
+
 Users can also update their information via POST requests.  
 **Input:**  
 POST request to route http://localhost:4000/users/update/11234567890 where *11234567890* is the user's current phone number.  
@@ -99,7 +116,15 @@ Status: `404 Not Found`
 Response:
 `Error: user does not exist.`
 Any other errors should return with a status `500 Internal Server Error` and the appropriate error message in the response.
-
+**Postman Script Tests:** 
+pm.test("Status test", function() {
+    pm.response.to.have.status(200);
+});
+pm.test("TestReturnObj", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.acknowledged).to.eql(true);
+    pm.expect(jsonData.modifiedCount).to.eql(1);
+});
 
 When a user joins an apartment, the frontend will send a request to update the user object with the apartment number, so the program can remember which apartments that user is in.  
 **Input:**  
@@ -132,7 +157,15 @@ Status: `404 Not Found`
 Response:
 `Error: user does not exist.`
 Any other errors should return with a status `500 Internal Server Error` and the appropriate error message in the response.  
-  
+**Postman Script Tests:** 
+pm.test("Status test", function() {
+    pm.response.to.have.status(200);
+});
+pm.test("TestReturnObj", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.acknowledged).to.eql(true);
+    pm.expect(jsonData.modifiedCount).to.eql(1);
+});
   
 Finally, a user can delete themselves from the database.  
 **Input:**  
@@ -148,6 +181,15 @@ Note that the `deletedCount` is 1, indicating the record was successfully delete
 }`  
 Failure:  
 If the record was not found, `deletedCount` would be 0, a soft failure. Any critical failures will be indicated with status `500 Internal Server Error` and an accompanying error message in the response body.
+**Postman Script Tests:** 
+pm.test("Status test", function() {
+    pm.response.to.have.status(200);
+});
+pm.test("TestReturnObj", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.acknowledged).to.eql(true);
+    pm.expect(jsonData.deletedCount).to.eql(1);
+});
 
 ### Apartments:
 
@@ -181,6 +223,14 @@ If the apartment already exists:
 Status: `500 Internal Server Error`
 Response:
 `E11000 duplicate key error`
+**Postman Script Tests:** 
+pm.test("Status test", function() {
+    pm.response.to.have.status(200);
+});
+pm.test("TestReturnObj", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.acknowledged).to.eql(true);
+});
 
 When a user joins an apartment, the frontend needs to accomplish two tasks: to get the apartment object from the joincode, and to add the user into the apartment. 
 On the backend side, these actions are served by a GET request and a POST update request.  
@@ -208,6 +258,14 @@ Failure:
 Status: `404 Not Found`
 Response:
 `Error: apartment not found.`  
+**Postman Script Tests:** 
+pm.test("Status test", function() {
+    pm.response.to.have.status(200);
+});
+pm.test("TestReturnObj", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.joinCode).to.eql("1234");
+});
 
 **Input:**  
 POST request to route http://localhost:4000/apts/update/1234 where *1234* is the apartment join code. 
@@ -251,6 +309,15 @@ Status: `404 Not Found`
 Response:
 `Error: apartment does not exist.`
 Any other errors should return with a status `500 Internal Server Error` and the appropriate error message in the response.  
+**Postman Script Tests:** 
+pm.test("Status test", function() {
+    pm.response.to.have.status(200);
+});
+pm.test("TestReturnObj", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.acknowledged).to.eql(true);
+    pm.expect(jsonData.modifiedCount).to.eql(1);
+});
 
 To test notifications, we issue a POST call to the database with an apartment that has at least one spot with a valid movetime and user. 
 **Input:**  
@@ -296,6 +363,15 @@ Response:
 `Error: apartment does not exist.`
 Any other errors should return with a status `500 Internal Server Error` and the appropriate error message in the response.  
 Then, the backend will automatically periodically check each apartment record's spots objects' movetimes against the current time, and when appropriate, send an SMS message to the corresponding user with accompanying text. We check these by manually verifying the text in the SMS message when we receive them on our phones.
+**Postman Script Tests:** 
+pm.test("Status test", function() {
+    pm.response.to.have.status(200);
+});
+pm.test("TestReturnObj", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.acknowledged).to.eql(true);
+    pm.expect(jsonData.modifiedCount).to.eql(1);
+});
 
 Lastly, an apartment can be removed from the database.  
 **Input:**  
@@ -311,3 +387,12 @@ Note that the `deletedCount` is 1, indicating the record was successfully delete
 }`  
 Failure:  
 If the record was not found, `deletedCount` would be 0, a soft failure. Any critical failures will be indicated with status `500 Internal Server Error` and an accompanying error message in the response body.
+**Postman Script Tests:** 
+pm.test("Status test", function() {
+    pm.response.to.have.status(200);
+});
+pm.test("TestReturnObj", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.acknowledged).to.eql(true);
+    pm.expect(jsonData.deletedCount).to.eql(1);
+});

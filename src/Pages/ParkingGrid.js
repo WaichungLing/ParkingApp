@@ -87,26 +87,25 @@ export default function ParkingGrid(props) {
   // When initialize
   useEffect(() => {
     
-    console.log(params);
-    console.log(url);
+    // console.log(params);
+    // console.log(url);
     
     setJoinCode(params.JoinCode);
     setPhone(url.state.phone);
     
     axios.get(`http://localhost:4000/apts/${params.JoinCode}`)
       .then((res)=>{
-        console.log(res);
+        // console.log(res);
         setN(res.data.num_spots);
         setM(res.data.num_lanes);
         setUserArray(res.data.spots);
         for (let i = 0; i < res.data.spots.length; i++){
           if (Object.keys(res.data.spots[i]).length !== 0 && res.data.spots[i].phone === url.state.phone){
-                console.log("matched",i)
                 setCarParked(i);
                 break;
           }
         }
-        console.log(userArray);
+        // console.log(userArray);
       }).catch((err)=>{
         console.log(err);
     })
@@ -122,7 +121,7 @@ export default function ParkingGrid(props) {
   
   function handleAskMove(e){
     let to = userArray[clickedID].phone;
-    console.log(to)
+    // console.log(to)
     fetch(`http://localhost:4000/api/send-sms?recipient=${to}`)
       .then(res => res.json())
       .then(data => {
@@ -168,12 +167,12 @@ export default function ParkingGrid(props) {
     }else{
       steps.x++;
     }
-    console.log((m-steps.y)*n+steps.x);
+    // console.log((m-steps.y)*n+steps.x);
   }
   
   function handleSave(e){
     let id = (m-steps.y)*n+steps.x;
-    console.log("Final position ", id);
+    // console.log("Final position ", id);
     // Did nothing
     if (id === -1 || carParked === id){
       return;
@@ -196,7 +195,7 @@ export default function ParkingGrid(props) {
       if (carParked !== -1 && carParked !== id){
         userArray[carParked] = {};
       }
-      console.log(userArray);
+      // console.log(userArray);
       setUserArray([...userArray]);
       setCarParked(id);
     }else{
@@ -208,7 +207,7 @@ export default function ParkingGrid(props) {
         if (carParked !== -1 && carParked !== id){
           userArray[carParked] = {};
         }
-        console.log(userArray);
+        // console.log(userArray);
         setUserArray([...userArray]);
         setCarParked(id);
       }
@@ -242,7 +241,7 @@ export default function ParkingGrid(props) {
     let mm = parseInt(minute)*5;
     let hh = parseInt(hour);
     let deltaDD = parseInt(day);
-    console.log([deltaDD, hh, mm]);
+    // console.log([deltaDD, hh, mm]);
     /** TODO **/
     // Create move time date()
     const day_ms = 86400000;
@@ -259,7 +258,7 @@ export default function ParkingGrid(props) {
       }
       id_temp = id_temp + n;
     }
-    console.log("set time: ", userArray);
+    // console.log("set time: ", userArray);
     // Update spots array
     axios.post(`http://localhost:4000/apts/${JoinCode}`,{
       spots:userArray,

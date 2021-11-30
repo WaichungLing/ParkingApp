@@ -65,7 +65,6 @@ function Login() {
   function handleLogin() {
     axios.get(`http://localhost:4000/users/verify/${PhoneNumber}/${Password}`)
       .then((response) => {
-        console.log(response)
         setErrorLogin(false);
         navigate('select',{state:{phone:response.data.phone, apartments: response.data.apartments}})
       }).catch((err) => {

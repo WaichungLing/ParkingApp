@@ -88,7 +88,6 @@ export default function CreateApartment(){
     while(!found){
       randomJoinCode = Math.floor(Math.random() * (10000 - 1000) + 1000);
       JoinCode = randomJoinCode.toString();
-      console.log("Trying join_code: ", JoinCode);
       await axios.get(`http://localhost:4000/apts/${JoinCode}`)
         .then((res)=>{
         })

@@ -5,7 +5,6 @@ import Setup from "./Setup";
 import CreateApartment from './CreateApartment';
 import ParkingGrid from "./ParkingGrid";
 import JoinCode from "./JoinCode";
-import Notification from "./Notification";
 
 function App() {
   return (
@@ -16,7 +15,6 @@ function App() {
         <Route path="join" element={<JoinCode/>}/>
         <Route path="create" element={<CreateApartment/>}/>
         <Route path="view/:JoinCode" element={<ParkingGrid/>}/>
-        {/*<Route path="notification" element={<Notification/>}/>*/}
         <Route
           path="*"
           element={

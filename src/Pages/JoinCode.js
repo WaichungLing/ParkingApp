@@ -1,9 +1,8 @@
 import { Button, Box, IconButton, Link as SLink, Typography, TextField, Toolbar } from "@mui/material";
-import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom';
+import { Outlet, useLocation, useNavigate} from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {useEffect, useState} from "react";
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import axios from "axios";
 
 function JoinCode() {
@@ -73,7 +72,6 @@ function JoinCode() {
   
   useEffect(()=>{
     // Keep track of the current user
-    console.log(url.state.apartments);
     setPhone(url.state.phone);
     setApartments(url.state.apartments);
   },[])

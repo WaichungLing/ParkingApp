@@ -13,7 +13,6 @@ const notificationWorkerFactory = function() {
                     result.send(err.message);
                 }
                 for (let i = 0; i < result.length; i++) {
-                    //console.log(result[i]);
                     Apartment(result[i]).sendNotifications();
                 }
             });

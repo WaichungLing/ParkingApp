@@ -79,7 +79,6 @@ function Setup() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   
   useEffect(()=>{
-    console.log(url);
     setApartments(url.state.apartments);
     setCurrentUserNumber(url.state.phone);
   },[])
@@ -132,7 +131,6 @@ function Setup() {
   }
   
   function handleUpdateInfo(e){
-    console.log(currentUserNumber)
     let flag = true;
     if (PhoneNumber === currentUserNumber){
       updateInfo();
